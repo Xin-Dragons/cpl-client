@@ -1,0 +1,70 @@
+@font-face {
+  font-family: "Raleway";
+  src: url("/Raleway-VariableFont_wght.woff2") format("woff2");
+  font-display: swap;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+  background: #14141f;
+  color: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.wallet-adapter-button-trigger {
+  color: #fff;
+  background: #0f766e;
+  border-radius: 50px;
+  height: 40px;
+  line-height: 40px;
+  transition: all 0.5s;
+}
+
+.wallet-adapter-button-trigger:hover {
+  background-color: #14b8a6 !important;
+  transition: all 0.5s;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c9ac8e #ece8e3;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 20px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #14141f;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #14141f;
+  border-radius: 5px;
+  transform: rotate(90deg);
+  margin-right: 10px;
+  border: 1px solid #14b8a583;
+}
+
+@media (max-width: 600px) {
+  .wallet-adapter-button-trigger {
+    margin-bottom: 10px !important;
+  }
+}

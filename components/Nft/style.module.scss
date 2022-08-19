@@ -1,0 +1,14 @@
+.nft {
+  background: #14141f;
+  border: 1px solid #16353a;
+  border-radius: 20px;
+  width: 200px;
+  padding: 5px;
+  position: relative;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.nftselected {
+  box-shadow: 0px 0px 12px 4px #42c6bb !important;
+}
