@@ -35,7 +35,8 @@ html {
   transition: all 0.5s;
 }
 
-.wallet-adapter-button-trigger:hover {
+.wallet-adapter-button-trigger:hover,
+.MuiTabs-indicator {
   background-color: #ef478d !important;
   transition: all 0.5s;
 }
@@ -50,6 +51,11 @@ html {
 .MuiSvgIcon-root {
   color: #ef478d !important
 }
+
+.MuiButtonBase-root {
+  color: #ffeef5 !important
+}
+
 
 * {
   scrollbar-width: thin;
