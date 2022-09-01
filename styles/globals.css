@@ -28,7 +28,7 @@ html {
 
 .wallet-adapter-button-trigger {
   color: #fff;
-  background: #0f766e;
+  background: rgb(206, 38, 108);
   border-radius: 50px;
   height: 40px;
   line-height: 40px;
@@ -36,8 +36,19 @@ html {
 }
 
 .wallet-adapter-button-trigger:hover {
-  background-color: #14b8a6 !important;
+  background-color: #ef478d !important;
   transition: all 0.5s;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: #ef478d !important;
+  border-width: 1px !important;
+}
+
+.MuiOutlinedInput-notchedOutline legend span,
+.MuiInputLabel-shrink,
+.MuiSvgIcon-root {
+  color: #ef478d !important
 }
 
 * {
@@ -60,7 +71,7 @@ html {
   border-radius: 5px;
   transform: rotate(90deg);
   margin-right: 10px;
-  border: 1px solid #14b8a583;
+  border: 1px solid rgba(228, 37, 117, 0.822);
 }
 
 @media (max-width: 600px) {

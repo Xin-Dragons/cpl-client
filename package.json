@@ -35,6 +35,7 @@
     "@solana/wallet-adapter-react": "^0.15.3",
     "@solana/wallet-adapter-react-ui": "^0.9.5",
     "@solana/wallet-adapter-wallets": "^0.15.2",
+    "@supabase/supabase-js": "^1.35.6",
     "axios": "^0.27.2",
     "bs58": "^5.0.0",
     "classnames": "^2.3.1",

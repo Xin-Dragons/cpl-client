@@ -11,7 +11,7 @@
 
 .nftswrap {
   background: #14141f;
-  border: 1px solid rgba(15, 118, 110, 0.3);
+  border: 1px solid rgba(118, 15, 75, 0.3);
   border-radius: 20px;
   padding: 15px;
   width: 50%;
@@ -29,14 +29,14 @@
     transition: all 0.5s;
 
     &:hover {
-      background-color: #14b8a6 !important;
+      background-color: rgb(228, 37, 117) !important;
       transition: all 0.5s;
     }
   }
 
   a {
     background: #14262c;
-    color: #22d4bf;
+    color: rgb(228, 37, 117);
     line-height: 50px;
     padding: 0 30px;
     display: inline-block;
@@ -56,7 +56,7 @@
     }
 
     &:hover {
-      box-shadow: 0 0 5px #22d4bf;
+      box-shadow: 0 0 5px rgb(228, 37, 117);
       transition: all 0.5s;
 
       img {
@@ -81,7 +81,7 @@
 
 .turdify {
   color: #fff !important;
-  background: #0f766e !important;
+  background: rgb(46, 7, 23) !important;
 }
 
 .turdify:hover {

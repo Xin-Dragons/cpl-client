@@ -70,7 +70,7 @@
 }
 
 .logo {
-  color: #14b8a6;
+  color: #fff;
   font-variation-settings: "wght" 1000;
   font-size: 25px;
   line-height: 55px;
@@ -119,11 +119,10 @@
   margin-bottom: 5px;
 }
 
-.headerblockmenu .logo {
-}
+.headerblockmenu .logo {}
 
 .menuselected {
-  color: #14b8a6;
+  color: rgba(228, 37, 117);
 }
 
 .headerblockapply div {
@@ -174,7 +173,7 @@
   height: 70px;
   width: 70px;
   display: inline-block;
-  background: #14262c;
+  background: #2c1421;
   border-radius: 50px;
   position: fixed;
   right: 20px;

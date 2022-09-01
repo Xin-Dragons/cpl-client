@@ -6,8 +6,8 @@
 .boxwrap,
 .nftswrap,
 .turdifywrap {
-  background: #14141f;
-  border: 1px solid rgba(15, 118, 110, 0.3);
+  background: #181818;
+  border: 1px solid rgba(228, 37, 117, 0.3);
   border-radius: 20px;
   padding: 15px;
   width: 50%;
@@ -46,6 +46,7 @@ dl.inline {
     margin: 0;
     text-transform: uppercase;
   }
+
   dd {
     float: left;
     width: 70%;
@@ -63,6 +64,7 @@ dl.inline {
   align-items: center;
   justify-content: center;
   margin-bottom: 1em;
+
   img {
     display: block;
     margin: 0.1em;
@@ -100,15 +102,15 @@ dl.inline {
 
 .boxwrap button:hover,
 .nftswrap button:hover {
-  background-color: #14b8a6 !important;
+  background-color: #ef478d !important;
   transition: all 0.5s;
 }
 
 .boxwrap a,
 .nftswrap a,
 .turdifywrap a {
-  background: #14262c;
-  color: #22d4bf;
+  background: rgb(206, 38, 108);
+  color: #fcd7e6;
   line-height: 50px;
   padding: 0 30px;
   display: inline-block;
@@ -126,7 +128,8 @@ dl.inline {
 .boxwrap a:hover,
 .nftswrap a:hover,
 .turdifywrap a:hover {
-  box-shadow: 0 0 5px #22d4bf;
+  // box-shadow: 0 0 5px rgb(206, 38, 108);
+  background: #ef478d;
   transition: all 0.5s;
 }
 
@@ -147,7 +150,7 @@ dl.inline {
     height: 50px;
     width: 50px;
     display: inline-block;
-    background: #14262c;
+    background: rgba(228, 37, 117);
     border-radius: 50px;
     display: flex;
     align-items: center;
@@ -160,7 +163,7 @@ dl.inline {
     }
 
     &:hover {
-      box-shadow: 0 0 10px #22d4bf;
+      box-shadow: 0 0 10px rgb(228, 37, 117);
       transform: translateX(5px);
       transition: all 0.5s;
     }
@@ -248,7 +251,7 @@ dl.inline {
 }
 
 .nft:hover {
-  box-shadow: 0px 0px 5px #42c6bb;
+  box-shadow: 0px 0px 5px rgb(228, 37, 117);
   transition: all 0.5s;
 }
 
@@ -307,7 +310,7 @@ dl.inline {
 
 .overlay .overlayplaceholder {
   background: #14141f;
-  border: 1px solid #16353a;
+  border: 1px solid rgb(88, 14, 45);
   border-radius: 20px;
   width: 310px;
   height: 310px;
