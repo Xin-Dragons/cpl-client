@@ -6,8 +6,8 @@
 .boxwrap,
 .nftswrap,
 .turdifywrap {
-  background: #14141f;
-  border: 1px solid rgba(15, 118, 110, 0.3);
+  background: #101010;
+  border: 1px solid rgba(118, 15, 67, 0.3);
   border-radius: 20px;
   padding: 15px;
   width: 50%;
@@ -47,6 +47,7 @@ dl.inline {
     margin: 0;
     text-transform: uppercase;
   }
+
   dd {
     float: left;
     width: 70%;
@@ -64,6 +65,7 @@ dl.inline {
   align-items: center;
   justify-content: center;
   margin-bottom: 1em;
+
   img {
     display: block;
     margin: 0.1em;
@@ -101,7 +103,7 @@ dl.inline {
 
 .boxwrap button:hover,
 .nftswrap button:hover {
-  background-color: #14b8a6 !important;
+  background-color: #b81461 !important;
   transition: all 0.5s;
 }
 
@@ -121,8 +123,8 @@ dl.inline {
 .boxwrap a,
 .nftswrap a,
 .turdifywrap a {
-  background: #14262c;
-  color: #22d4bf;
+  background: rgb(206, 38, 108);
+  color: #ffe2ee;
   line-height: 50px;
   padding: 0 30px;
   display: inline-block;
@@ -140,7 +142,7 @@ dl.inline {
 .boxwrap a:hover,
 .nftswrap a:hover,
 .turdifywrap a:hover {
-  box-shadow: 0 0 5px #22d4bf;
+  box-shadow: 0 0 5px #690c3b;
   transition: all 0.5s;
 }
 
@@ -161,7 +163,7 @@ dl.inline {
     height: 50px;
     width: 50px;
     display: inline-block;
-    background: #14262c;
+    background: rgb(206, 38, 108);
     border-radius: 50px;
     display: flex;
     align-items: center;
@@ -174,7 +176,7 @@ dl.inline {
     }
 
     &:hover {
-      box-shadow: 0 0 10px #22d4bf;
+      box-shadow: 0 0 10px rgb(206, 38, 108);
       transform: translateX(5px);
       transition: all 0.5s;
     }
@@ -210,8 +212,8 @@ dl.inline {
 
 .nft,
 .nftsmall {
-  background: #14141f;
-  border: 1px solid #16353a;
+  background: #14030c;
+  border: 1px solid #3a1627;
   border-radius: 20px;
   width: 200px;
   padding: 5px;
@@ -315,8 +317,9 @@ dl.inline {
 }
 
 .overlay .overlayplaceholder {
-  background: #14141f;
-  border: 1px solid #16353a;
+  background: #14030c;
+  border: 1px solid #3a1627;
+  padding: 10px;
   border-radius: 20px;
   width: 310px;
   height: 310px;
@@ -365,7 +368,31 @@ dl.inline {
   flex-direction: row;
   gap: 7px;
   width: 100%;
+
+  a {
+    background: rgb(206, 38, 108);
+    color: #ffe2ee;
+    line-height: 50px;
+    padding: 0 30px;
+    display: inline-block;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-variation-settings: "wght" 700;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    transition: all 0.5s;
+  }
+
+  a:hover {
+    color: #fff !important;
+    background: rgb(224, 56, 126) !important;
+  }
 }
+
+
 
 .nftbtnwrap {
   justify-content: center;
