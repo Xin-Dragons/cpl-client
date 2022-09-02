@@ -3,7 +3,7 @@ import { SystemProgram, Transaction } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { Layout } from "../components";
+import { Layout, Spinner } from "../components";
 import styles from "../styles/Home.module.scss";
 import toast from "react-hot-toast";
 import classNames from "classnames";
@@ -47,6 +47,7 @@ function Nft({ nft }) {
 
 const Home: NextPage = ({ usingLedger = false }) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [slide, setSlide] = useState<number>(0);
   const [collection, setCollection] = useState<string | null>(null);
   const [collectionNft, setCollectionNft] = useState<Object | null>(null);
@@ -58,8 +59,9 @@ const Home: NextPage = ({ usingLedger = false }) => {
   const wallet = useWallet();
 
   async function lookupCollection() {
+    setLoading(true)
     const res = await axios.post('/api/get-collection', { update_authority: wallet?.publicKey?.toString() })
-
+    setLoading(false)
     const collection = res.data;
 
     if (collection) {
@@ -107,6 +109,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
   async function loadCollections(e) {
     try {
+      setLoading(true)
       if (collectionType === 'collection') {
         await loadCollection();
       }
@@ -158,6 +161,8 @@ const Home: NextPage = ({ usingLedger = false }) => {
     } catch (err) {
       const message = err?.message || err;
       toast.error(message);
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -194,6 +199,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
   async function confirmCollection() {
     try {
+      setLoading(true)
       const params = {
         publicKey: wallet.publicKey.toString(),
       };
@@ -220,17 +226,19 @@ const Home: NextPage = ({ usingLedger = false }) => {
       router.push(`/collection/${model.slug}`);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false)
     }
   }
 
   const slides = [
     <>
       <h1>
-        <span>YAWWW</span> Buster
+        <span>Creator</span> Protection Legaue
       </h1>
       <h2>
         Your Project, Your Choice! Connect UA Wallet in order to set fees for
-        NFT owners who sell through Yawww
+        NFT owners who trade without creator royalties
       </h2>
       <div className={classNames(styles.boxbtnwrap)}>
         <WalletMultiButton />{" "}
@@ -267,7 +275,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
       />
       <div className={classNames(styles.boxbtnwrap)}>
         <a href="#" onClick={loadCollections}>
-          Load Collections <img src="/right-sign.svg" />
+          Load Collection <img src="/right-sign.svg" />
         </a>
       </div>
     </>,
@@ -285,7 +293,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
         <dd>{nfts.length}</dd>
       </dl>
 
-      <h3>Confirm you want add this collection to NAWWW</h3>
+      <h3>Confirm you want add this collection to CPL</h3>
 
       {!!nfts.length && (
         <div className={styles.miniGrid}>
@@ -306,7 +314,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
   const hasPrev = slides[slide - 1];
 
   return (
-    <Layout>
+    <Layout page="add">
       <div className={styles.hero}>
         <div className={classNames(styles.grid, styles.mheight)}>
           <div
@@ -319,7 +327,14 @@ const Home: NextPage = ({ usingLedger = false }) => {
               <img src="/right-sign.svg" />
             </a>
           </div>
-          <div className={classNames(styles.boxwrap)}>{slides[slide]}</div>
+          <div className={classNames(styles.boxwrap)}>
+            {
+              loading && <div className={styles.spinnerWrapper}><Spinner /></div>
+            }
+            {
+              slides[slide]
+            }
+          </div>
           <div
             className={classNames(styles.nextstep, {
               [styles.disabled]: !hasNext,

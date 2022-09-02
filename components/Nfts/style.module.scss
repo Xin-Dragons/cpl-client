@@ -68,32 +68,3 @@
   }
 }
 
-.nftbtnwrap {
-  display: flex;
-  flex-direction: row;
-  gap: 7px;
-  width: 100%;
-}
-
-.nftbtnwrap {
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.turdify {
-  color: #fff !important;
-  background: rgb(206, 38, 108) !important;
-}
-
-.turdify:hover {
-  background: #ef478d !important;
-}
-
-@media (max-width: 600px) {
-
-  .nftbtnwrap {
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-}

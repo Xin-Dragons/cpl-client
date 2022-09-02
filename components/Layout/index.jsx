@@ -4,14 +4,14 @@ import { Toaster } from "react-hot-toast";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import styles from "./style.module.scss";
 
-export function Layout({ children }) {
+export function Layout({ children, page }) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>NAWWW</title>
+        <title>Creator Protection League</title>
         <meta
           name="description"
-          content="Set fees for NFT owners that sell through YAWWW"
+          content="Set fees for NFT owners traded without royalties"
         />
         <link
           rel="preload"
@@ -29,17 +29,17 @@ export function Layout({ children }) {
         <div className={styles.hgrid}>
           <div className={styles.headerblockmenu}>
             <div className={styles.logo}>
-              <a href="/">NAWWW</a>
+              <a href="/">CPL</a>
             </div>
             <nav>
               <ul>
-                <li className={styles.menuselected}>
+                <li className={page === 'add' && styles.menuselected}>
                   <Link href="/">ADD PROJECT</Link>
                 </li>
-                <li>
-                  <Link href="/update-collection">UPDATE COLLECTION</Link>
+                <li className={page === 'update' && styles.menuselected}>
+                  <Link href="/collection">UPDATE COLLECTION</Link>
                 </li>
-                <li>
+                <li className={page === 'restore' && styles.menuselected}>
                   <Link href="/restore-nfts">RESTORE NFTS</Link>
                 </li>
               </ul>
@@ -55,7 +55,7 @@ export function Layout({ children }) {
         </a>
       </div>
       <footer className={styles.footer}>
-        NAWWW {new Date().getFullYear()}
+        CPL {new Date().getFullYear()}
       </footer>
     </div>
   );

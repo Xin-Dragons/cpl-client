@@ -1,8 +1,32 @@
-import { PublicKey, Connection } from '@solana/web3.js';
+import { PublicKey, Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
 import { programs } from '@metaplex/js'
 const { metadata: { Metadata } } = programs;
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL);
+
+export async function getDebtRepaymentTransactions({ publicKey, nfts }) {
+  console.log('see')
+  const promises = nfts.map(async item => {
+    const debt = item.debt;
+    const creators = item.creators.filter(c => c.share > 0);
+
+    const instructions = creators.map(creator => {
+      const lamports = debt / 100 * creator.share * LAMPORTS_PER_SOL
+      return SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new PublicKey(creator.address),
+        lamports
+      })
+    })
+
+    const tx = new Transaction().add(...instructions)
+    tx.feePayer = publicKey;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+    return tx
+  })
+
+  return Promise.all(promises)
+}
 
 export async function getTransactions(items, updateAuthority) {
   const promises = items.map(async item => {
