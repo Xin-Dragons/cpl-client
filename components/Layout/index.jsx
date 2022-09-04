@@ -34,10 +34,10 @@ export function Layout({ children, page }) {
             <nav>
               <ul>
                 <li className={page === 'add' && styles.menuselected}>
-                  <Link href="/">ADD PROJECT</Link>
+                  <Link href="/">ADD COLLECTION</Link>
                 </li>
                 <li className={page === 'update' && styles.menuselected}>
-                  <Link href="/collection">UPDATE COLLECTION</Link>
+                  <Link href="/collections">COLLECTIONS</Link>
                 </li>
                 <li className={page === 'restore' && styles.menuselected}>
                   <Link href="/restore-nfts">RESTORE NFTS</Link>

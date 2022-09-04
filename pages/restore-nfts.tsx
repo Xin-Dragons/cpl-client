@@ -7,13 +7,17 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import type { NextPage } from "next";
 import { Layout } from '../components'
+import { useRouter } from 'next/router'
 import Head from "next/head";
 import Link from "next/link";
 import Image from 'next/image'
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import toast from 'react-hot-toast'
+import { getAllMints } from '../helpers/db'
 import Pagination from '@mui/material/Pagination';
 import { Nfts, Modal } from '../components'
-import { getDebtRepaymentTransactions } from '../helpers'
+import { getDebtRepaymentTransactions, hashify } from '../helpers'
 import { getNftsByOwner } from '../helpers'
 import styles from "../styles/Home.module.scss";
 import classnames from "classnames";
@@ -63,7 +67,6 @@ function Turdify({ nfts, closeModal, collection, refresh }) {
   }
 
   useEffect(() => {
-    console.log(signatures)
     if (signatures.every(sig => sig === true)) {
       refresh()
     }
@@ -90,7 +93,7 @@ function Turdify({ nfts, closeModal, collection, refresh }) {
       setSignatures(allSigs)
     } catch (err) {
       setLoading(false)
-      console.log(err.code)
+      console.log(err)
       toast.error(err.message)
     }
   }
@@ -143,25 +146,46 @@ function Turdify({ nfts, closeModal, collection, refresh }) {
   </>
 }
 
-const Home: NextPage = ({ allMints }) => {
+const Home: NextPage = ({ allMints: initialAllMints }) => {
   const wallet = useWallet();
   const [nfts, setNfts] = useState([]);
   const [selected, setSelected] = useState([])
   const [count, setCount] = useState(0);
   const [limit, setLimit] = useState(20)
+  const [allMints, setAllMints] = useState(initialAllMints);
   const [page, setPage] = useState(1)
+  const [filter, setFilter] = useState('all')
   const [modalShowing, setModalShowing] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [filtered, setFiltered] = useState([]);
+  const router = useRouter();
 
-  async function refreshNfts() {
-    const { data: { data } } = await axios.post('/api/get-nfts', { filter: 'turds', limit, offset: (page - 1) * limit })
+  async function lookupCollection() {
+    setLoading(true)
+    const res = await axios.post('/api/get-collections', { update_authority: wallet?.publicKey?.toString() })
+    setLoading(false)
+    const collection = res.data;
 
+    if (collection) {
+      return router.push(`/collection/${collection.slug}`)
+    }
+  }
+
+  useEffect(() => {
+    if (wallet.publicKey && wallet.connected) {
+      lookupCollection()
+    }
+  }, [wallet.publicKey, wallet.connected])
+
+  async function getMyNfts() {
+    setLoading(true)
     const promises = (
       await getNftsByOwner(wallet?.publicKey?.toString())
     )
-      .filter(nft => data.map(d => d.mint).includes(nft.mint))
+      .filter(nft => allMints.map(d => d.mint).includes(nft.mint))
       .map(async item => {
-        const { data: metadata } = await axios.get(item.uri)
-        const nft = data.find(d => d.mint === item.mint)
+        const { data: metadata } = await axios.get(hashify(item.data.uri))
+        const nft = allMints.find(d => d.mint === item.mint)
         return {
           ...nft,
           ...item,
@@ -169,31 +193,37 @@ const Home: NextPage = ({ allMints }) => {
         }
       })
 
-    const ownedNfts = await Promise.all(promises)
-
-    setNfts(ownedNfts)
+    const ownedNfts = await Promise.all(promises);
+    setNfts(ownedNfts);
+    setLoading(false)
   }
 
-  // async function fetchMeta() {
-  //   const promises = nfts.map(async nft => {
-  //     console.log(nft)
-  //     if (nft.metadata) {
-  //       return nft;
-  //     }
-  //     const { data: metadata } = await axios.get(nft.uri)
-  //     return {
-  //       ...nft,
-  //       metadata
-  //     }
-  //   })
-  //
-  //   const fetched = await Promise.all(promises);
-  //   setNfts(fetched.filter(item => {
-  //     console.log(item)
-  //     const hasDebt = item.metadata.attributes.find(att => att.trait_type === 'Debt')
-  //     return hasDebt
-  //   }))
-  // }
+  useEffect(() => {
+    if (wallet.connected && wallet.publicKey) {
+      getMyNfts();
+    }
+  }, [allMints, wallet.connected, wallet.publicKey])
+
+  async function refreshAllMints() {
+    const { data: allMints } = await axios.get('/get-nfts');
+    setAllMints(allMints)
+  }
+
+  useEffect(() => {
+    const filtered = nfts.filter(item => filter === 'to-restore' ? item.turdified : true)
+    setFiltered(filtered)
+    setCount(filtered.length)
+  }, [page, filter, nfts, limit])
+
+  useEffect(() => {
+    setCount(nfts.length)
+  }, [nfts])
+
+  useEffect(() => {
+    if (wallet.publicKey && wallet.connected) {
+      getMyNfts()
+    }
+  }, [wallet.connected, wallet.publicKey])
 
   function onNftClick(mint) {
     if (selected.includes(mint)) {
@@ -206,22 +236,18 @@ const Home: NextPage = ({ allMints }) => {
     }
   }
 
+  const canDeturdify = selected.length && selected.some(mint => {
+    const nft = nfts.find(n => n.mint === mint)
+    return nft.turdified;
+  })
+
   function toggleModal(e) {
     e.preventDefault()
+    if (!canDeturdify) {
+      return false
+    }
     setModalShowing(!modalShowing);
   }
-
-  // useEffect(() => {
-  //   if (nfts.find(nft => !nft.metadata)) {
-  //     fetchMeta()
-  //   }
-  // }, [nfts])
-
-  useEffect(() => {
-    if (wallet.connected && wallet.publicKey) {
-      refreshNfts()
-    }
-  }, [page, wallet.connected, wallet.publicKey])
 
   function onFilterChange(e, newValue) {
     setFilter(newValue)
@@ -265,28 +291,41 @@ const Home: NextPage = ({ allMints }) => {
         modalShowing && (
           <Modal setModalShowing={setModalShowing}>
             <Turdify
-              nfts={nfts.filter(n => selected.includes(n.mint))}
+              nfts={nfts.filter(n => selected.includes(n.mint) && n.turdified)}
               closeModal={() => setModalShowing(false)}
-              refresh={refreshNfts}
+              refresh={refreshAllMints}
             />
           </Modal>
         )
       }
       <div className={classnames(styles.grid)}>
+        <Tabs
+          value={filter}
+          onChange={onFilterChange}
+        >
+          <Tab value="to-restore" label="To Restore" />
+          <Tab value="all" label="Wallet" />
+        </Tabs>
         <Nfts
-          nfts={nfts}
+          nfts={filtered.slice((page - 1) * limit, page * limit)}
           selected={selected}
           onNftClick={onNftClick}
+          loading={loading}
         />
-        <Pagination
-          count={count / limit}
-          page={page}
-          onChange={(event, value) => setPage(value)}
-        />
+        {
+          count > limit && (
+            <Pagination
+              count={Math.ceil(count / limit)}
+              page={page}
+              onChange={(event, value) => setPage(value)}
+            />
+          )
+        }
+
         <div className={classnames(styles.nftbtnwrap)}>
           <a href="#" onClick={cancel}>Cancel</a>
           <a href="#" onClick={selectAll}>{allSelected ? 'DESELECT' : 'SELECT'} ALL</a>
-          <a href="#" className={classnames(styles.turdify)} onClick={toggleModal}>RESTORE</a>
+          <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !canDeturdify })} onClick={toggleModal}>RESTORE</a>
         </div>
       </div>
     </Layout>
@@ -294,3 +333,12 @@ const Home: NextPage = ({ allMints }) => {
 };
 
 export default Home;
+
+export async function getServerSideProps() {
+  const allMints = await getAllMints();
+  return {
+    props: {
+      allMints
+    }
+  }
+}

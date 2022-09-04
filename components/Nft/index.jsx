@@ -3,7 +3,6 @@ import Image from 'next/image'
 import styles from './style.module.scss'
 
 export function Nft({ nft, selected, onClick }) {
-  console.log(nft)
   return (
     <div className={classnames(styles.nft, { [styles.nftselected]: selected })} onClick={onClick}>
       <Image

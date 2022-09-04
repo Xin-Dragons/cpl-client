@@ -146,8 +146,8 @@ dl.inline {
   transition: all 0.5s;
 }
 
-.boxwrap a:hover img,
-.nftswrap a:hover img {
+.boxwrap a:not(.disabled):hover img,
+.nftswrap a:not(.disabled):hover img {
   transform: translateX(5px);
   transition: all 0.5s;
 }
@@ -180,6 +180,7 @@ dl.inline {
       transform: translateX(5px);
       transition: all 0.5s;
     }
+
   }
 
   &.prevstep {
@@ -339,6 +340,10 @@ dl.inline {
   max-width: 1430px;
   flex-direction: row;
   width: 1200px;
+
+  &.column {
+    flex-direction: column;
+  }
 }
 
 .card {
@@ -392,20 +397,60 @@ dl.inline {
   }
 }
 
-
-
 .nftbtnwrap {
   justify-content: center;
   margin-top: 30px;
 }
 
 .turdify {
-  color: #fff !important;
-  background: rgb(206, 38, 108) !important;
+  color: #fff;
+  background: rgb(206, 38, 108);
+
+  &:hover {
+    background: #ef478d;
+  }
+
+
 }
 
-.turdify:hover {
-  background: #ef478d !important;
+.disabled {
+  opacity: 0.5 !important;
+  cursor: default !important;
+}
+
+.overlayplaceholder {
+  position: relative;
+
+  img {
+    border-radius: 15px;
+  }
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  a {
+    color: white;
+    width: auto;
+    display: inline-block;
+    padding: 1em;
+    height: 1em;
+    width: 1em;
+    line-height: 1em;
+    float: right;
+    margin: 1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 @media (max-width: 600px) {

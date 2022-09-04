@@ -8,7 +8,7 @@ import { getCollection, getMints } from '../../helpers/db'
 import type { NextPage } from "next";
 import { Layout, Modal, Nfts, Nft } from '../../components'
 import styles from "../../styles/Home.module.scss";
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import classnames from "classnames";
 import { getNfts, getNft, getTransactions } from "../../helpers";
 import toast from 'react-hot-toast'
@@ -49,6 +49,8 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
   const wallet = useWallet();
   const [loading, setLoading] = useState(false);
   const [signatures, setSignatures] = useState(nfts.map(() => null));
+  const [file, setFile] = useState(null)
+  const fileInput = useRef();
 
   function done(index) {
     setSignatures(signatures.map((signature, i) => {
@@ -59,8 +61,13 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
     }))
   }
 
+  function onFileClick(e) {
+    e.preventDefault();
+    console.log('wee')
+    fileInput.current.click();
+  }
+
   useEffect(() => {
-    console.log(signatures)
     if (signatures.every(sig => sig === true)) {
       refresh()
     }
@@ -71,14 +78,34 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
     closeModal()
   }
 
+  function onFileChange(e) {
+    setFile(e.target.files[0]);
+  }
+
+  useEffect(() => {
+    console.log(file)
+  }, [file])
+
   async function turdify(e) {
     e.preventDefault()
     try {
-      const urls = deturdify
-        ? nfts.map(item => ({ mint: item.mint, uri: item.metadata_url }))
-        : (
-          await axios.post('/api/turdify', { mints: nfts, publicKey: wallet.publicKey, collection })
+      let urls;
+      if (deturdify) {
+        urls = nfts.map(item => ({ mint: item.mint, uri: item.metadata_url }))
+      } else {
+        const formData = new FormData();
+        if (file) {
+          formData.append('image', file);
+        }
+        nfts.forEach(mint => {
+          formData.append('mints[]', mint.mint)
+        })
+        formData.append('publicKey', wallet?.publicKey?.toString())
+        formData.append('collection', collection)
+        urls = (
+          await axios.post('/api/turdify', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
         ).data
+      }
 
       const transactions = await getTransactions(urls, wallet.publicKey)
 
@@ -98,15 +125,24 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
     }
   }
 
+  function cancelFile(e) {
+    e.preventDefault();
+    setFile(null);
+  }
+
   return <>
     <div className={classnames(styles.grid, styles.nftgrid)}>
       <div className={classnames(styles.turdifywrap)}>
         <div className={classnames(styles.overlay)}>
           <div className={classnames(styles.overlayplaceholder)}>
-            <Image src="/poop.png" width={310} height={310} />
+            <Image src={file ? URL.createObjectURL(file) : '/poop.png'} width={310} height={310} />
+            {
+              file && <div className={styles.imageOverlay}><a href="#" className={styles.close} onClick={cancelFile}>X</a></div>
+            }
           </div>
           <h4>Current Image Overlay</h4>
-          <a href="#">Upload Custom Image</a>
+          <input type="file" className={styles.hidden} ref={fileInput} onChange={onFileChange} />
+          <a href="#" onClick={onFileClick}>Upload Custom Image</a>
         </div>
         <div className={classnames(styles.selectedlist)}>
           {
@@ -136,7 +172,7 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
                   onClick={turdify}
                   className={classnames(styles.turdify)}
                 >
-                  { deturdify ? 'DETURDIFY' : 'TURDIFY' }
+                  { deturdify ? 'RESTORE' : 'MUTATE' }
                 </a>
               )
           }
@@ -155,8 +191,24 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
   const [count, setCount] = useState(initialCount)
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
+  const [loading, setLoading] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const wallet = useWallet()
+
+  useEffect(() => {
+    setSelected([])
+  }, [page, filter])
 
   const [modalShowing, setModalShowing] = useState(false)
+
+  useEffect(() => {
+    if (wallet.connected && wallet.publicKey && wallet.publicKey.toString() === collection.update_authority) {
+      setIsAdmin(true)
+    } else {
+      setIsAdmin(false)
+    }
+  }, [wallet.connected, wallet.publicKey])
+
 
   function toggleModal(e) {
     e.preventDefault()
@@ -164,6 +216,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
   }
 
   async function fetchMeta() {
+    setLoading(true)
     const promises = nfts.map(async nft => {
       console.log(nft)
       if (nft.metadata) {
@@ -181,6 +234,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
       const hasDebt = item.metadata.attributes.find(att => att.trait_type === 'Debt')
       return hasDebt
     }))
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -190,25 +244,27 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
   }, [nfts])
 
   async function loadCollection() {
+    let collectionNft;
+    const nft = await getNft(nfts[0].mint)
     if (collection.lookup_type === 'collection') {
-      const collectionNft = await getNft(collection.id)
-      setCollection(collectionNft)
+      collectionNft = await getNft(collection.id)
     } else {
-      const nft = await getNft(nfts[0].mint)
       if (nft?.collection?.address) {
-        const collectionNft = await getNft(nft.collection.address)
-        setCollectionNft(collectionNft)
-      } else {
-        const collectionNft = {
-          name: nft.name.split('#')[0].trim(),
-          symbol: nft.symbol,
-          image: nft.json.image
-        }
+        collectionNft = await getNft(nft.collection.address)
       }
     }
+    if (!collectionNft || collectionNft.name === 'Collection NFT') {
+      collectionNft = {
+        name: nft.name.split('#')[0].trim(),
+        symbol: nft.symbol,
+        image: nft?.json?.image
+      }
+    }
+    setCollectionNft(collectionNft)
   }
 
   async function refreshNfts() {
+    setLoading(true)
     const { data: { data = [], count } } = await axios.post('/api/get-nfts', { filter, limit, offset: (page - 1) * limit, collection: collection && collection.id })
     const allNfts = (
       await getNfts(data.map(item => item.mint), true)
@@ -222,6 +278,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
       })
     setNfts(allNfts)
     setCount(count)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -261,6 +318,30 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
     }
   }
 
+  function onActionClick(e) {
+    e.preventDefault();
+    if (!selected.length) {
+      return;
+    }
+    toggleModal(e)
+  }
+
+  async function markDelisted(e) {
+    console.log('hsihs')
+    e.preventDefault();
+    if (!selected.length) {
+      return;
+    }
+
+    await axios.post('/api/mark-delisted', { mints: selected, collection: collection.id });
+
+    await refreshNfts();
+
+    if (!nfts.length) {
+      setFilter('all')
+    }
+  }
+
   const allSelected = selected.length === nfts.length
 
   return (
@@ -271,13 +352,13 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
         </h2>
       </div>
       {
-        modalShowing && (
+        modalShowing && isAdmin && (
           <Modal setModalShowing={setModalShowing}>
             <Turdify
               nfts={nfts.filter(n => selected.includes(n.mint))}
               closeModal={() => setModalShowing(false)}
               collection={collection.id}
-              deturdify={filter === 'turds'}
+              deturdify={filter === 'restore'}
               refresh={refreshNfts}
             />
           </Modal>
@@ -288,27 +369,45 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount }) 
           value={filter}
           onChange={onFilterChange}
         >
-          <Tab value="outstanding" label="To turdify" />
+          <Tab value="sold" label="Sold" />
+          <Tab value="listed" label="Listed" />
           <Tab value="all" label="All" />
-          <Tab value="turds" label="Turds" />
+          <Tab value="restore" label="Mutated" />
         </Tabs>
         <Nfts
           nfts={nfts}
           onNftClick={onNftClick}
           selected={selected}
+          loading={loading}
         />
-        <Pagination
-          count={count / limit}
-          page={page}
-          onChange={(event, value) => setPage(value)}
-        />
-        <div className={classnames(styles.nftbtnwrap)}>
-          <a href="#" onClick={cancel}>Cancel</a>
-          <a href="#" onClick={selectAll}>{allSelected ? 'DESELECT' : 'SELECT'} ALL</a>
-          <a href="#" className={classnames(styles.turdify)} onClick={toggleModal}>
-            {filter === 'turds' ? 'DETURDIFY SELECTED' : 'TURDIFY SELECTED' }
-          </a>
-        </div>
+        {
+          count > limit && (
+            <Pagination
+              count={Math.ceil(count / limit)}
+              page={page}
+              onChange={(event, value) => setPage(value)}
+            />
+          )
+        }
+
+        {
+          isAdmin && (
+            <div className={classnames(styles.nftbtnwrap)}>
+              <a href="#" onClick={cancel}>Cancel</a>
+              <a href="#" onClick={selectAll}>{allSelected ? 'DESELECT' : 'SELECT'} ALL</a>
+              {
+                filter === 'listed' && (
+                  <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={markDelisted}>
+                    MARK DELISTED
+                  </a>
+                )
+              }
+              <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={onActionClick}>
+                {filter === 'restore' ? 'RESTORE SELECTED' : 'MUTATE SELECTED' }
+              </a>
+            </div>
+          )
+        }
       </div>
     </Layout>
   );
@@ -330,16 +429,6 @@ export async function getServerSideProps(ctx) {
         ...fromDb
       }
     })
-
-  // const promises = data.map(async item => {
-  //   const nft = await getNft(item.mint)
-  //   return {
-  //     ...nft,
-  //     metadata: nft.json
-  //   }
-  // })
-
-  // const withData = await Promise.all(promises);
 
   return {
     props: {

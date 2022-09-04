@@ -5,13 +5,12 @@ const { metadata: { Metadata } } = programs;
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL);
 
 export async function getDebtRepaymentTransactions({ publicKey, nfts }) {
-  console.log('see')
   const promises = nfts.map(async item => {
     const debt = item.debt;
-    const creators = item.creators.filter(c => c.share > 0);
+    const creators = item.data.creators.filter(c => c.share > 0);
 
     const instructions = creators.map(creator => {
-      const lamports = debt / 100 * creator.share * LAMPORTS_PER_SOL
+      const lamports = Math.ceil(debt / 100 * creator.share * LAMPORTS_PER_SOL)
       return SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: new PublicKey(creator.address),
@@ -54,20 +53,9 @@ export async function getTransactions(items, updateAuthority) {
       }
     )
 
-  //
-  //   tx.instructions.push(transferInstruction);
-  //
-  //   tx.feePayer = userWallet;
-  //
     tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
     tx.setSigners(updateAuthority);
-  //
-  //   const signature = nacl.sign.detached(tx.serializeMessage(), keypair.secretKey);
-  //
-  //   tx.addSignature(keypair.publicKey, Buffer.from(signature));
-  //
-  //   return tx;
-  // })
+
     return tx
   })
 

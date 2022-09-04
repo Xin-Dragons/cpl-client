@@ -70,6 +70,18 @@ export async function getCollection({ slug, update_authority }) {
   return data[0];
 }
 
+export async function getAllMints() {
+  const { data, error } = await supabase
+    .from('mints')
+    .select('*')
+
+  if (error) {
+    throw new Error('Error getting mints')
+  }
+
+  return data;
+}
+
 export async function getMints({ collection, limit, offset = 0, filter = 'all', mints }) {
   let query = supabase
     .from('mints')
@@ -85,12 +97,16 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
 
   if (filter === 'all') {
     query = query.order('number')
-  } else if (filter === 'turds') {
+  } else if (filter === 'restore') {
     query = query.is('turdified', true)
-  } else if (filter === 'outstanding') {
+  } else if (filter === 'sold') {
     query = query
       .is('turdified', false)
       .not('debt', 'is', null)
+  } else if (filter === 'listed') {
+    query = query
+      .is('listed', true)
+      .is('debt', null)
   }
 
   const { data, count, error } = await query
@@ -104,6 +120,22 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
     data,
     count
   };
+}
+
+export async function markDelisted({ collection, mints }) {
+  const { data, error } = await supabase
+    .from('mints')
+    .update({
+      listed: false
+    })
+    .eq('collection', collection)
+    .in('mint', mints)
+
+  if (error) {
+    throw new Error(error)
+  }
+
+  return data;
 }
 
 export async function markTransaction({ mint, signature }) {
@@ -155,36 +187,54 @@ export async function restore({ mint, signature }) {
   return update;
 }
 
-export async function turdify({ mints, collection, publicKey, image }) {
-  const promises = mints.map(async nft => {
-    const { data: meta } = await axios.get(nft.metadata_url);
+export async function getMint({ mint, collection }) {
+  const { data, error } = await supabase
+    .from('mints')
+    .select('*')
+    .eq('collection', collection)
+    .eq('mint', mint)
+    .limit(1)
+    .single()
+
+  if (error) {
+    throw new Error('Error looking up mint')
+  }
+
+  return data
+}
+
+export async function turdify({ mints, collection, publicKey, imagePath }) {
+  const promises = mints.map(async mint => {
+    const item = await getMint({ mint, collection });
+    const { data: meta } = await axios.get(item.metadata_url);
 
     const name = `Turdified ${meta.name}`
 
     const newMeta = {
       name,
       description: 'This NFT has been masked as it was purchased from a zero fees marketplace. Visit creatorsprotectionleague.io to pay your dues and restore :)',
-      image: 'https://fvncezpefoxrbaqqtanr.supabase.co/storage/v1/object/public/assets/default/poop.png',
+      image: imagePath || 'https://fvncezpefoxrbaqqtanr.supabase.co/storage/v1/object/public/assets/default/poop.png',
       attributes: [{
         trait_type: 'Debt',
-        value: nft.debt
+        value: item.debt
       }],
       properties: {
         files: [
           {
-            uri: nft.metadata_url,
+            uri: item.metadata_url,
             type: 'text/json'
           }
         ]
       }
     }
 
-    const turdified_metadata_url = await uploadMetadata({ collection, publicKey: nft.mint, metadata: newMeta, filename: 'metadata.json' })
+    const turdified_metadata_url = await uploadMetadata({ collection, publicKey: item.mint, metadata: newMeta, filename: 'metadata.json' })
 
-    await updateNft({ mint: nft.mint, turdified_metadata_url })
+    await updateNft({ mint, turdified_metadata_url })
+    console.log(turdified_metadata_url)
 
     return {
-      mint: nft.mint,
+      mint,
       uri: turdified_metadata_url
     }
   })
@@ -234,4 +284,38 @@ export async function uploadMetadata({ collection, publicKey, metadata, filename
     .getPublicUrl(filepath);
 
   return publicURL;
+}
+
+export async function getCollections() {
+  const { data, error } = await supabase
+    .from('collections')
+    .select(`
+      *,
+      mints (mint)
+    `)
+    .is('active', true)
+
+  if (error) {
+    throw new Error('Error looking up collections')
+  }
+
+  return data;
+}
+
+export async function upload({ file, collection }) {
+  const path = `uploads/${collection}/${file.originalname}`;
+  const { data, error } = await supabase.storage
+    .from('assets')
+    .upload(path, file.buffer, { upsert: true, contentType: file.mimetype, cacheControl: '1' });
+
+  if (error) {
+    throw new Error('Error uploading')
+  }
+
+  const { publicURL, error: err } = supabase
+    .storage
+    .from('assets')
+    .getPublicUrl(path)
+
+  return publicURL
 }

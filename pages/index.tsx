@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Layout, Spinner } from "../components";
 import styles from "../styles/Home.module.scss";
 import toast from "react-hot-toast";
-import classNames from "classnames";
+import classnames from "classnames";
 import { useEffect, useState } from "react";
 import { pickBy } from "lodash";
 import bs58 from "bs58";
@@ -65,7 +65,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
     const collection = res.data;
 
     if (collection) {
-      return router.push(`/collection/${collection.slug}`)
+      return router.push(`/collections/${collection.slug}`)
     }
   }
 
@@ -77,6 +77,9 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
   function nextSlide(e) {
     e.preventDefault();
+    if (!wallet.connected || !wallet.publicKey) {
+      return;
+    }
     const next = slide + 1;
     if (slides[next]) {
       setSlide(next);
@@ -109,6 +112,9 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
   async function loadCollections(e) {
     try {
+      if (!collection) {
+        throw new Error(`Add the ${collectionType === 'collection' ? 'collection ID' : 'first verified creator'}`)
+      }
       setLoading(true)
       if (collectionType === 'collection') {
         await loadCollection();
@@ -133,7 +139,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
         params: [collection],
       };
 
-      const res = await axios.post(process.env.NEXT_PUBLIC_RPC_URL, data, {
+      const res = await axios.post(process.env.NEXT_PUBLIC_INDEX_URL, data, {
         headers,
       });
       const nfts = res.data.result;
@@ -159,6 +165,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
       setNfts(validEntries.map((n) => n.metadata));
       setSlide(slide + 1);
     } catch (err) {
+      console.log(err)
       const message = err?.message || err;
       toast.error(message);
     } finally {
@@ -199,6 +206,9 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
   async function confirmCollection() {
     try {
+      if (!collection || !nfts.length) {
+        throw new Error('Missing params')
+      }
       setLoading(true)
       const params = {
         publicKey: wallet.publicKey.toString(),
@@ -223,8 +233,9 @@ const Home: NextPage = ({ usingLedger = false }) => {
       });
 
       const model = res.data;
-      router.push(`/collection/${model.slug}`);
+      router.push(`/collections/${model.slug}`);
     } catch (err) {
+      toast.error(err.message)
       console.log(err);
     } finally {
       setLoading(false)
@@ -234,15 +245,15 @@ const Home: NextPage = ({ usingLedger = false }) => {
   const slides = [
     <>
       <h1>
-        <span>Creator</span> Protection Legaue
+        <span>Creator</span> Protection League
       </h1>
       <h2>
         Your Project, Your Choice! Connect UA Wallet in order to set fees for
         NFT owners who trade without creator royalties
       </h2>
-      <div className={classNames(styles.boxbtnwrap)}>
+      <div className={classnames(styles.boxbtnwrap)}>
         <WalletMultiButton />{" "}
-        <a href="#" onClick={nextSlide}>
+        <a href="#" onClick={nextSlide} className={classnames({ [styles.disabled]: !wallet.connected || !wallet.publicKey })}>
           Next Step <img src="/right-sign.svg" />
         </a>
       </div>
@@ -251,7 +262,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
       <h1>
         <span>LOAD</span> collection
       </h1>
-      <h2>Enter the Metaplex Certified Collection id to lookup all mints</h2>
+      <h2>{`Enter the ${collectionType === 'collection' ? 'Metaplex certified collection ID' : 'first verified creator ID'} to lookup all mints`}</h2>
       <FormControl>
         <FormLabel id="demo-radio-buttons-group-label">Lookup by</FormLabel>
         <RadioGroup
@@ -273,7 +284,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
         fullWidth
         sx={{mb: 2}}
       />
-      <div className={classNames(styles.boxbtnwrap)}>
+      <div className={classnames(styles.boxbtnwrap)}>
         <a href="#" onClick={loadCollections}>
           Load Collection <img src="/right-sign.svg" />
         </a>
@@ -302,7 +313,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
           ))}
         </div>
       )}
-      <div className={classNames(styles.boxbtnwrap)}>
+      <div className={classnames(styles.boxbtnwrap)}>
         <a href="#" onClick={confirmCollection}>
           Confirm <img src="/right-sign.svg" />
         </a>
@@ -316,10 +327,10 @@ const Home: NextPage = ({ usingLedger = false }) => {
   return (
     <Layout page="add">
       <div className={styles.hero}>
-        <div className={classNames(styles.grid, styles.mheight)}>
+        <div className={classnames(styles.grid, styles.mheight)}>
           <div
-            className={classNames(styles.nextstep, styles.prevstep, {
-              [styles.disabled]: !hasPrev,
+            className={classnames(styles.nextstep, styles.prevstep, {
+              [styles.disabled]: !hasPrev || !wallet.connected || !wallet.publicKey,
             })}
             onClick={prevSlide}
           >
@@ -327,7 +338,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
               <img src="/right-sign.svg" />
             </a>
           </div>
-          <div className={classNames(styles.boxwrap)}>
+          <div className={classnames(styles.boxwrap)}>
             {
               loading && <div className={styles.spinnerWrapper}><Spinner /></div>
             }
@@ -336,8 +347,8 @@ const Home: NextPage = ({ usingLedger = false }) => {
             }
           </div>
           <div
-            className={classNames(styles.nextstep, {
-              [styles.disabled]: !hasNext,
+            className={classnames(styles.nextstep, {
+              [styles.disabled]: !hasNext || !wallet.connected || !wallet.publicKey,
             })}
             onClick={nextSlide}
           >
