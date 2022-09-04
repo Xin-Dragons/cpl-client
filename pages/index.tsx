@@ -308,8 +308,8 @@ const Home: NextPage = ({ usingLedger = false }) => {
 
       {!!nfts.length && (
         <div className={styles.miniGrid}>
-          {nfts.slice(0, 6).map((nft) => (
-            <Nft nft={nft} />
+          {nfts.slice(0, 6).map((nft, index) => (
+            <Nft key={index} nft={nft} />
           ))}
         </div>
       )}

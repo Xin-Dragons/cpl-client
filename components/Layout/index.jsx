@@ -18,7 +18,7 @@ export function Layout({ children, page }) {
           href="/Raleway-VariableFont_wght.woff2"
           as="font"
           type="font/woff2"
-          crossorigin="anonymous"
+          crossOrigin="anonymous"
         ></link>
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -29,18 +29,20 @@ export function Layout({ children, page }) {
         <div className={styles.hgrid}>
           <div className={styles.headerblockmenu}>
             <div className={styles.logo}>
-              <a href="/">CPL</a>
+              <Link href="/">
+                <a>CPL</a>
+              </Link>
             </div>
             <nav>
               <ul>
                 <li className={page === 'add' && styles.menuselected}>
-                  <Link href="/">ADD COLLECTION</Link>
+                  <Link href="/"><a>ADD COLLECTION</a></Link>
                 </li>
                 <li className={page === 'update' && styles.menuselected}>
-                  <Link href="/collections">COLLECTIONS</Link>
+                  <Link href="/collections"><a>COLLECTIONS</a></Link>
                 </li>
                 <li className={page === 'restore' && styles.menuselected}>
-                  <Link href="/restore-nfts">RESTORE NFTS</Link>
+                  <Link href="/restore-nfts"><a>RESTORE NFTS</a></Link>
                 </li>
               </ul>
             </nav>

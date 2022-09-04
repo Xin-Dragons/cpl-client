@@ -56,7 +56,7 @@ export default function Collections({ collections }) {
         </h2>
         <div className={classnames(styles.nftswrap)}>
           {
-            collections.map(collection => <Collection collection={collection} />)
+            collections.map(collection => <Collection key={collection.id} collection={collection} />)
           }
         </div>
       </div>
