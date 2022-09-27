@@ -289,7 +289,7 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
                               ? <Image src={file ? URL.createObjectURL(file) : selectedImage} width={310} height={310} />
                               : (
                                 images.length > 1
-                                  ? images.map(image => <Image src={image} width={100} height={100} onClick={() => setSelectedImage(image)} />)
+                                  ? images.map(image => <Image key={image} src={image} width={100} height={100} onClick={() => setSelectedImage(image)} />)
                                   : <Image src={'/poop.png'} width={310} height={310} />
                               )
 

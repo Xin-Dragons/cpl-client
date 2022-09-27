@@ -228,7 +228,7 @@ export default function Mint({ mint, programs }) {
                               <>
                                 <p>This item was purchased avoiding creator royalties.
                                 If you are the project owner you can update the meta
-                                to log the outstanding debt as a new trait: "Debt"</p>
+                                to log the outstanding debt as a new trait: &quot;Debt&quot;</p>
 
                                 <p>This property can be used internally to limit access
                                 to certain featured or functionality.</p>
@@ -238,7 +238,7 @@ export default function Mint({ mint, programs }) {
 
 
                                 <p>Be sure to check the transaction history to be sure
-                                the item hasn't been resold since.</p>
+                                the item hasn&apos;t been resold since.</p>
                               </>
 
                             </>
@@ -263,9 +263,9 @@ export default function Mint({ mint, programs }) {
                     <TableBody>
                       {
                         activity.map(item => (
-                          <TableRow>
+                          <TableRow key={item.id}>
                             <TableCell>
-                              <a href={`https://solscan.io/tx/${item.id}`} target="_blank">{truncate(item.id)}</a>
+                              <a href={`https://solscan.io/tx/${item.id}`} target="_blank" rel="noreferrer">{truncate(item.id)}</a>
                             </TableCell>
                             <TableCell>{ item.activity }</TableCell>
                             <TableCell>{ item.time }</TableCell>
