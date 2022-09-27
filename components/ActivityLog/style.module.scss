@@ -1,0 +1,21 @@
+.activityLog {
+  position: relative;
+}
+
+.img {
+  width: 50px;
+  border-radius: 5px;
+  border: 1px solid #fff9d31f;
+}
+
+.spinnerWrapper {
+  position: absolute;
+  top:0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
