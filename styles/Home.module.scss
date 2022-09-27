@@ -34,6 +34,15 @@
   padding: 2px 10px;
 }
 
+.nftinner {
+  display: flex;
+  flex-direction: row;
+
+  > div {
+    margin: 10px;
+  }
+}
+
 dl.inline {
   width: 100%;
   overflow: hidden;
@@ -120,8 +129,21 @@ dl.inline {
   border-radius: 20px;
 }
 
+.shrink {
+  flex-grow: 1
+}
+
+.fullHeight {
+  height: unset !important;
+}
+
+.grow {
+  flex-grow: 2;
+  min-width: 55%;
+}
+
 .boxwrap a,
-.nftswrap a,
+.nftswrap:not(.mint) a,
 .turdifywrap a {
   background: rgb(206, 38, 108);
   color: #ffe2ee;

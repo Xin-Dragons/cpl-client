@@ -8,11 +8,21 @@ const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL, 'finalized');
 const metaplex = new Metaplex(connection);
 
 export async function getNft(mint) {
-  const nft = await metaplex
+  const nfts = await metaplex
     .nfts()
-    .findByMint({ mintAddress: new PublicKey(mint) })
+    .findAllByMintList({ mints: [new PublicKey(mint)] })
     .run();
-  return nft;
+
+  if (!nfts[0]) {
+    return {}
+  }
+
+  const { data: json } = await axios.get(hashify(nfts[0].uri))
+
+  return {
+    ...nfts[0],
+    json
+  }
 }
 
 export async function getNfts(mints, getMeta) {

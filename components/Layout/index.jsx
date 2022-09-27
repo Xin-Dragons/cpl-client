@@ -39,10 +39,10 @@ export function Layout({ children, page }) {
                   <Link href="/"><a>ADD COLLECTION</a></Link>
                 </li>
                 <li className={page === 'update' && styles.menuselected}>
-                  <Link href="/collections"><a>COLLECTIONS</a></Link>
+                  <Link href="/collection"><a>COLLECTIONS</a></Link>
                 </li>
-                <li className={page === 'restore' && styles.menuselected}>
-                  <Link href="/restore-nfts"><a>RESTORE NFTS</a></Link>
+                <li className={page === 'wallet' && styles.menuselected}>
+                  <Link href="/wallet"><a>WALLET</a></Link>
                 </li>
               </ul>
             </nav>

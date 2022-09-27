@@ -1,6 +1,6 @@
 module.exports = {
   images: {
-    domains: ['cdn.magiceden.io'],
+    domains: ['cdn.magiceden.io', 'arweave.net', 'fvncezpefoxrbaqqtanr.supabase.co'],
   },
   typescript: {
     // !! WARN !!

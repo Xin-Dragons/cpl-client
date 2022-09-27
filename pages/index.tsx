@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { Layout, Spinner } from "../components";
 import styles from "../styles/Home.module.scss";
+import { getRpcUrls } from '../helpers/db';
 import toast from "react-hot-toast";
 import classnames from "classnames";
 import { useEffect, useState } from "react";
@@ -45,7 +46,7 @@ function Nft({ nft }) {
   );
 }
 
-const Home: NextPage = ({ usingLedger = false }) => {
+const Home: NextPage = ({ usingLedger = false, rpcUrls }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [slide, setSlide] = useState<number>(0);
@@ -65,7 +66,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
     const collection = res.data;
 
     if (collection) {
-      return router.push(`/collections/${collection.slug}`)
+      return router.push(`/collection/${collection.slug}`)
     }
   }
 
@@ -139,7 +140,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
         params: [collection],
       };
 
-      const res = await axios.post(process.env.NEXT_PUBLIC_INDEX_URL, data, {
+      const res = await axios.post(sample(rpcUrls), data, {
         headers,
       });
       const nfts = res.data.result;
@@ -233,7 +234,7 @@ const Home: NextPage = ({ usingLedger = false }) => {
       });
 
       const model = res.data;
-      router.push(`/collections/${model.slug}`);
+      router.push(`/collection/${model.slug}`);
     } catch (err) {
       toast.error(err.message)
       console.log(err);
@@ -363,3 +364,13 @@ const Home: NextPage = ({ usingLedger = false }) => {
 };
 
 export default Home;
+
+export async function getServerSideProps() {
+  const rpcUrls = await getRpcUrls();
+
+  return {
+    props: {
+      rpcUrls
+    }
+  }
+}

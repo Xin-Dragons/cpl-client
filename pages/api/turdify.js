@@ -16,10 +16,13 @@ apiRoute.use(multer({ storage: multer.memoryStorage() }).single('image'));
 
 apiRoute.post(async (req, res) => {
   const file = req.file;
-  const { mints, collection, publicKey } = req.body;
-  const imagePath = await upload({ file, collection });
+  const { mints, collection, publicKey, type } = req.body;
+  let imagePath
+  if (file) {
+    imagePath = await upload({ file, collection });
+  }
 
-  const urls = await turdify({ mints, collection, publicKey, imagePath });
+  const urls = await turdify({ mints, collection, publicKey, imagePath, type });
   res.status(200).json(urls)
 });
 
