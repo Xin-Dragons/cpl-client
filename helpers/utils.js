@@ -5,10 +5,6 @@ import {
   differenceInMinutes,
 } from 'date-fns'
 
-export function hashify(url) {
-  return `${url}?hash=${parseInt(Math.random() * 100000000)}`
-}
-
 export function truncate(str) {
   return `${str.substring(0, 5)}...${str.substring(str.length - 5, str.length)}`
 }

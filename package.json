@@ -43,6 +43,8 @@
     "bs58": "^5.0.0",
     "classnames": "^2.3.1",
     "date-fns": "^2.29.3",
+    "hyperspace-client-js": "^1.4.7",
+    "jimp": "^0.16.2",
     "lodash": "^4.17.21",
     "multer": "^1.4.5-lts.1",
     "next": "^12.2.5",

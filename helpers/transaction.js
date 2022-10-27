@@ -166,7 +166,7 @@ export async function createNonceAccounts({ wallet, items }) {
 
   toast.promise(sendPromise, {
     loading: 'Confirming nonce transactions',
-    success: 'Confirmed',
+    success: 'Nonce transactions completed',
     error: 'Error confirming, please try again',
   });
 
@@ -288,4 +288,34 @@ export async function getDeturdifyTransactions({ items, wallet, collection }) {
   })
 
   await axios.post('/api/update-restore-txns', { items: patchedItems, collection });
+}
+
+export async function signTransaction(wallet) {
+  if (wallet.publicKey) {
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: wallet.publicKey,
+        lamports: 0,
+      })
+    );
+    transaction.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+    transaction.feePayer = wallet.publicKey;
+    const signedTxn = await wallet?.signTransaction?.(transaction);
+    return signedTxn;
+  }
+}
+
+export async function signMessage(wallet, usingLedger = false) {
+  const message = `Sign message to confirm you own this wallet and are validating this action\n\n${wallet.publicKey.toString()}`;
+  const encodedMessage = new TextEncoder().encode(message);
+  if (!usingLedger) {
+    const signedMessage = await wallet?.signMessage?.(encodedMessage);
+    return bs58.encode(new Uint8Array(signedMessage || []));
+  } else {
+    const txn = await signTransaction();
+    return txn;
+  }
 }

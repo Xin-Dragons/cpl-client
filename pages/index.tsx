@@ -9,10 +9,11 @@ import { getRpcUrls } from '../helpers/db';
 import toast from "react-hot-toast";
 import classnames from "classnames";
 import { useEffect, useState } from "react";
-import { pickBy } from "lodash";
+import { pickBy, sample } from "lodash";
 import bs58 from "bs58";
 import axios from "axios";
-import { getNft } from "../helpers";
+
+import { signMessage, signTransaction, getNft } from '../helpers'
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -39,7 +40,7 @@ function Nft({ nft }) {
     <div>
       {metadata && (
         <img
-          src={`https://cdn.magiceden.io/rs:fill:150:150:0:0/plain/${metadata.image}`}
+          src={metadata.image}
         />
       )}
     </div>
@@ -171,37 +172,6 @@ const Home: NextPage = ({ usingLedger = false, rpcUrls }) => {
       toast.error(message);
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function signTransaction() {
-    if (wallet.publicKey) {
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: wallet.publicKey,
-          toPubkey: wallet.publicKey,
-          lamports: 0,
-        })
-      );
-      transaction.recentBlockhash = (
-        await connection.getLatestBlockhash()
-      ).blockhash;
-      transaction.feePayer = wallet.publicKey;
-      const signedTxn = await wallet?.signTransaction?.(transaction);
-      return signedTxn;
-    }
-  }
-
-  async function signMessage(params: object) {
-    params = pickBy(params, Boolean);
-    const message = `Sign message to confirm you own this wallet and are validating this action\n\n${wallet.publicKey.toString()}`;
-    const encodedMessage = new TextEncoder().encode(message);
-    if (!usingLedger) {
-      const signedMessage = await wallet?.signMessage?.(encodedMessage);
-      return bs58.encode(new Uint8Array(signedMessage || []));
-    } else {
-      const txn = await signTransaction();
-      return txn;
     }
   }
 

@@ -10,20 +10,19 @@ import { Layout } from '../components'
 import { useRouter } from 'next/router'
 import Head from "next/head";
 import Link from "next/link";
-import Image from 'next/image'
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import toast from 'react-hot-toast'
-import { getAllMints } from '../helpers/db'
 import Pagination from '@mui/material/Pagination';
 import { Nfts, Modal } from '../components'
-import { getDebtRepaymentTransactions, hashify } from '../helpers'
+import { getDebtRepaymentTransactions } from '../helpers'
+import { getMints } from '../helpers/db'
 import { getNftsByOwner } from '../helpers'
 import styles from "../styles/Home.module.scss";
 import classnames from "classnames";
 import axios from 'axios'
 
-const connection = new Connection('https://ssc-dao.genesysgo.net/', {
+const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL, {
   commitment: 'confirmed',
   confirmTransactionInitialTimeout: 30000
 })
@@ -108,7 +107,7 @@ function Turdify({ nfts, closeModal, collection, refresh }) {
               return (
                 <div key={nft.mint} className={classnames(styles.nftsmall)}>
                   <div className={classnames(styles.selecteditem)}>
-                    <img src={`https://cdn.magiceden.io/rs:fill:200:200:0:0/plain/${nft?.metadata?.image}`} />
+                    <img src={nft?.metadata?.image} />
                     <h3>{nft.name}</h3>
                     <h4>Debt: {nft.debt}</h4>
                   </div>
@@ -177,14 +176,18 @@ const Home: NextPage = ({ allMints: initialAllMints }) => {
     }
   }, [wallet.publicKey, wallet.connected])
 
+  useEffect(() => {
+    refreshAllMints()
+  }, [])
+
   async function getMyNfts() {
     setLoading(true)
     const promises = (
       await getNftsByOwner(wallet?.publicKey?.toString())
     )
-      .filter(nft => allMints.map(d => d.mint).includes(nft.mint))
+      .filter(nft => allMints.includes(nft.mint))
       .map(async item => {
-        const { data: metadata } = await axios.get(hashify(item.data.uri))
+        const { data: metadata } = await axios.get(item.data.uri)
         const nft = allMints.find(d => d.mint === item.mint)
         return {
           ...nft,
@@ -202,10 +205,10 @@ const Home: NextPage = ({ allMints: initialAllMints }) => {
     if (wallet.connected && wallet.publicKey) {
       getMyNfts();
     }
-  }, [allMints, wallet.connected, wallet.publicKey])
+  }, [wallet.connected, wallet.publicKey])
 
   async function refreshAllMints() {
-    const { data: allMints } = await axios.get('/get-nfts');
+    const { data: allMints } = await axios.post('/api/get-nfts', { filter: 'active', onlyMints: true });
     setAllMints(allMints)
   }
 
@@ -223,7 +226,7 @@ const Home: NextPage = ({ allMints: initialAllMints }) => {
     if (wallet.publicKey && wallet.connected) {
       getMyNfts()
     }
-  }, [wallet.connected, wallet.publicKey])
+  }, [allMints, wallet.connected, wallet.publicKey])
 
   function onNftClick(mint) {
     if (selected.includes(mint)) {
@@ -333,7 +336,8 @@ const Home: NextPage = ({ allMints: initialAllMints }) => {
 export default Home;
 
 export async function getServerSideProps() {
-  const allMints = await getAllMints();
+  const allMints = await getMints({ filter: 'active', onlyMints: true })
+  console.log(allMints)
   return {
     props: {
       allMints

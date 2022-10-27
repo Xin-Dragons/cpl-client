@@ -139,7 +139,7 @@ export async function getAllMints() {
   return data;
 }
 
-export async function getMints({ collection, limit, offset = 0, filter = 'all', mints }) {
+export async function getMints({ collection, limit, offset = 0, filter = 'all', mints, onlyMints }) {
   let query = supabase
     .from('mints')
     .select('*, collection(id, slug)', { count: 'exact' })
@@ -164,6 +164,8 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
     query = query
       .is('listed', true)
       .is('debt', null)
+  } else if (filter === 'active') {
+    query = query.is('collection.active', true)
   }
 
   const { data, count, error } = await query
@@ -171,6 +173,10 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
   if (error && error.length) {
     console.log(error)
     throw new Error(error)
+  }
+
+  if (onlyMints) {
+    return data.map(item => item.mint)
   }
 
   return {
@@ -307,10 +313,38 @@ export async function getPrograms() {
   return data;
 }
 
+export async function dismissDebt({ mint }) {
+  const { data, error } = await supabase
+    .from('mints')
+    .update({ debt:  null })
+    .eq('mint', mint)
+
+  if (error) {
+    throw new Error('Error dismissing debt')
+  }
+
+  return data;
+}
+
+export async function getCollectionByMint({ mint }) {
+  const { data, error } = await supabase
+    .from('mints')
+    .select('collection(*)')
+    .eq('mint', mint)
+    .limit(1)
+    .single();
+
+  if (error) {
+    throw new Error('Unable to find mint')
+  }
+
+  return data.collection;
+}
+
 export async function getMint({ mint, collection }) {
   let query = supabase
     .from('mints')
-    .select('*')
+    .select('*, collection(*)')
     .eq('mint', mint)
     .limit(1)
     .single()
@@ -432,6 +466,7 @@ export async function getCollections({ limit = 25, offset = 0, filter } = {}) {
   const { data, count, error } = await query;
 
   if (error) {
+    console.log(error)
     throw new Error('Error looking up collections')
   }
 

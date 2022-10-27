@@ -76,7 +76,7 @@ export function ActivityLog({ collection }) {
     {
       id: 'image',
       label: loading && <Spinner small />,
-      format: row => <img width={50} height={50} src={`https://cdn.magiceden.io/rs:fill:400:400:0:0/plain/${row.image}`} className={styles.img} />
+      format: row => <img width={50} height={50} src={row.image} className={styles.img} />
     },
     {
       id: 'name',

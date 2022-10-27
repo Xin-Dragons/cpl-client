@@ -39,7 +39,7 @@ export function Layout({ children, page }) {
                   <Link href="/"><a>ADD COLLECTION</a></Link>
                 </li>
                 <li className={page === 'update' && styles.menuselected}>
-                  <Link href="/collection"><a>COLLECTIONS</a></Link>
+                  <Link href="/collections"><a>COLLECTIONS</a></Link>
                 </li>
                 <li className={page === 'wallet' && styles.menuselected}>
                   <Link href="/wallet"><a>WALLET</a></Link>
