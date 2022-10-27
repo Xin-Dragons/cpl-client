@@ -142,6 +142,15 @@ dl.inline {
   min-width: 55%;
 }
 
+.royaltyAvoided * {
+  background-color: rgb(228, 37, 117) !important;
+  color: white !important;
+}
+
+.pink {
+  color: rgb(228, 37, 117)
+}
+
 .boxwrap a,
 .nftswrap:not(.mint) a,
 .turdifywrap a {

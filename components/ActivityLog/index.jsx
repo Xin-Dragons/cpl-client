@@ -81,7 +81,7 @@ export function ActivityLog({ collection }) {
     {
       id: 'name',
       label: 'Name',
-      format: row => <Link href={`/collection/${row.collection}/mint/${row.mint}`}><a>{row.name}</a></Link>
+      format: row => <Link href={`/collections/${row.collection}/mint/${row.mint}`}><a>{row.name}</a></Link>
     },
     {
       id: 'id',

@@ -451,10 +451,7 @@ export async function uploadMetadata({ collection, publicKey, metadata, filename
 export async function getCollections({ limit = 25, offset = 0, filter } = {}) {
   let query = supabase
     .from('collections')
-    .select(`
-      *,
-      mints (mint)
-    `, { count: 'exact' })
+    .select(`*`, { count: 'exact' })
     .range(offset, offset + limit - 1)
 
   if (filter === 'active') {

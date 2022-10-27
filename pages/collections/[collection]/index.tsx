@@ -421,7 +421,6 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
 }
 
 const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rpcUrls, usingLedger = false }) => {
-  const [collectionNft, setCollectionNft] = useState<Object>({});
   const [selected, setSelected] = useState([]);
   const [filter, setFilter] = useState('all');
   const [nfts, setNfts] = useState(initialNfts)
@@ -480,31 +479,11 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
     }
   }, [nfts])
 
-  async function loadCollection() {
-    let collectionNft;
-    const nft = await getNft(nfts[0].mint)
-    if (collection.lookup_type === 'collection') {
-      collectionNft = await getNft(collection.id)
-    } else {
-      if (nft?.collection?.address) {
-        collectionNft = await getNft(nft.collection.address)
-      }
-    }
-    if (!collectionNft || collectionNft.name === 'Collection NFT') {
-      collectionNft = {
-        name: nft.name.split('#')[0].trim(),
-        symbol: nft.symbol,
-        image: nft?.json?.image
-      }
-    }
-    setCollectionNft(collectionNft)
-  }
-
   async function refreshNfts() {
     setLoading(true)
     const { data: { data = [], count } } = await axios.post('/api/get-nfts', { filter, limit, offset: (page - 1) * limit, collection: collection && collection.id })
     const allNfts = (
-      await getNfts(data.map(item => item.mint), true)
+      await getNfts((data || []).map(item => item.mint), true)
     )
       .map(item => {
         const fromDb = data.find(d => d.mint === item.mint)
@@ -521,10 +500,6 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
   useEffect(() => {
     refreshNfts()
   }, [page, filter])
-
-  useEffect(() => {
-    loadCollection()
-  }, [collection])
 
   function onFilterChange(e, newValue) {
     setFilter(newValue)
@@ -660,7 +635,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
     <Layout page="update">
       <div className={classnames(styles.grid)}>
         <h2 className={classnames(styles.pagetitle)}>
-          { collectionNft.name }
+          { collection.name }
         </h2>
       </div>
       {
@@ -748,6 +723,7 @@ export default Home;
 export async function getServerSideProps(ctx) {
   const collection = await getCollection({ slug: ctx.query.collection })
   const { data = [], count } = await getMints({ collection: collection.id, limit: 20 })
+  console.log(data)
   const rpcUrls = await getRpcUrls();
 
   const allNfts = (

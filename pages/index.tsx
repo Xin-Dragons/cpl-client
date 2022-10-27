@@ -67,7 +67,7 @@ const Home: NextPage = ({ usingLedger = false, rpcUrls }) => {
     const collection = res.data;
 
     if (collection) {
-      return router.push(`/collection/${collection.slug}`)
+      return router.push(`/collections/${collection.slug}`)
     }
   }
 
@@ -204,7 +204,7 @@ const Home: NextPage = ({ usingLedger = false, rpcUrls }) => {
       });
 
       const model = res.data;
-      router.push(`/collection/${model.slug}`);
+      router.push(`/collections/${model.slug}`);
     } catch (err) {
       toast.error(err.message)
       console.log(err);

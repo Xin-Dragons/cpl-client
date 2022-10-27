@@ -21,7 +21,7 @@ export function Nfts({
     if (onNftClick) {
       return onNftClick(nft.mint)
     } else {
-      router.push(`/collection/${nft.collection.slug}/mint/${nft.mint}`)
+      router.push(`/collections/${nft.collection.slug}/mint/${nft.mint}`)
     }
   }
 

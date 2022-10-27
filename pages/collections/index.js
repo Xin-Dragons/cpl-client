@@ -12,49 +12,12 @@ import axios from 'axios'
 
 import styles from '../../styles/Home.module.scss'
 
-async function getRandomNft(collection) {
-  try {
-    return getNft(sample(collection.mints).mint)
-  } catch (err) {
-    return getRandomNft(collection)
-  }
-}
-
 function Collection({ collection }) {
-  const [nft, setNft] = useState(null);
-
-  async function loadCollection() {
-    let collectionNft;
-    if (!collection.mints.length) {
-      console.log(collection)
-    }
-    const nft = await getRandomNft(collection)
-    if (collection.collection) {
-      collectionNft = await getNft(collection.collection)
-    } else {
-      if (nft?.collection?.address) {
-        collectionNft = await getNft(nft.collection.address)
-      }
-    }
-    if (!collectionNft || collectionNft.name === 'Collection NFT') {
-      collectionNft = {
-        name: nft?.name?.split('#')[0]?.trim(),
-        symbol: nft?.symbol,
-        json: {
-          image: nft?.json?.image
-        }
-      }
-    }
-    setNft(collectionNft)
-  }
-
-  useEffect(loadCollection, [])
-
   return (
     <Link href={`/collections/${collection.slug}`}>
       <div className={classnames(styles.nft)}>
-        <img src={nft?.json?.image} />
-          <h3>{collection.name || nft?.name}</h3>
+        <img src={collection.image} />
+          <h3>{collection.name}</h3>
       </div>
     </Link>
   )
@@ -115,9 +78,7 @@ export default function Collections({ collections: initialCollections, count: in
               <>
               <div className={classnames(styles.nftswrap)}>
                 {
-                  collections
-                    .filter(c => c.mints.length)
-                    .map(collection => <Collection key={collection.id} collection={collection} />)
+                  collections.map(collection => <Collection key={collection.id} collection={collection} />)
                 }
               </div>
               {
@@ -141,6 +102,7 @@ export default function Collections({ collections: initialCollections, count: in
 
 export async function getServerSideProps() {
   const { data, count } = await getCollections({ limit: 25, offset: 0, filter: 'all' });
+  console.log(data.length)
 
   return {
     props: {

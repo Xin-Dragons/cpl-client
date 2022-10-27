@@ -166,7 +166,7 @@ const Home: NextPage = ({ allMints: initialAllMints }) => {
     const collection = res.data;
 
     if (collection) {
-      return router.push(`/collection/${collection.slug}`)
+      return router.push(`/collections/${collection.slug}`)
     }
   }
 

@@ -3,6 +3,11 @@ import { get } from 'lodash';
 
 const hsClient = new HyperspaceClient(process.env.HYPERSPACE_API_KEY);
 
+const nopes = [
+  'BID',
+  'CANCELBID'
+]
+
 export async function getMintHistory(mint) {
   const res = await hsClient.getTokenHistory({
     condition: {
@@ -10,7 +15,7 @@ export async function getMintHistory(mint) {
     }
   })
 
-  return get(res, 'getMarketPlaceActionsByToken[0].market_place_actions');
+  return get(res, 'getMarketPlaceActionsByToken[0].market_place_actions').filter(item => !nopes.includes(item.type));
 }
 
 export async function getMarketplaces() {

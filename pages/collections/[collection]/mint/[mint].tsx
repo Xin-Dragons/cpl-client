@@ -297,12 +297,9 @@ export default function Mint({ mint, history, mps }) {
                     <TableBody>
                       {
                         history.map(item => (
-                          <TableRow key={item.id}>
-                          {
-                            console.log(item)
-                          }
+                          <TableRow key={item.id} className={classnames({ [styles.royaltyAvoided]: item.signature === mint.last_sale_transaction && mint.debt })}>
                             <TableCell>
-                              <a href={`https://solscan.io/tx/${item.signature}`} target="_blank" rel="noreferrer">{truncate(item.signature)}</a>
+                              <a className={styles.pink} href={`https://solscan.io/tx/${item.signature}`} target="_blank" rel="noreferrer">{truncate(item.signature)}</a>
                             </TableCell>
                             <TableCell>
                               {mps.find(m => m.marketplace_program_id === item.marketplace_program_id).display_name}
