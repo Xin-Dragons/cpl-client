@@ -35,8 +35,7 @@ export async function getNfts(mints, getMeta) {
     return nfts;
   }
 
-  const promises = nfts.filter(n => Boolean(n.uri.trim())).map(async nft => {
-    console.log(nft)
+  const promises = nfts.filter(n => Boolean(n?.uri?.trim())).map(async nft => {
     const { data: metadata } = await axios.get(nft.uri)
 
     return {

@@ -15,7 +15,7 @@ export async function getMintHistory(mint) {
     }
   })
 
-  return get(res, 'getMarketPlaceActionsByToken[0].market_place_actions').filter(item => !nopes.includes(item.type));
+  return get(res, 'getMarketPlaceActionsByToken[0].market_place_actions', []).filter(item => !nopes.includes(item.type));
 }
 
 export async function getMarketplaces() {

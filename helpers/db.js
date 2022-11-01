@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { v4 as uuid } from "uuid";
 import axios from 'axios'
 import { isUndefined } from 'lodash'
-export const supabase = createClient(process.env.DB_URL, process.env.DB_SECRET);
+export const supabase = createClient(process.env.NEXT_PUBLIC_DB_URL, process.env.DB_SECRET);
 
 export async function createCollection({ slug, mints, collection, type, publicKey }) {
   const model = await addCollection({ slug, collection, type, publicKey });
@@ -139,7 +139,7 @@ export async function getAllMints() {
   return data;
 }
 
-export async function getMints({ collection, limit, offset = 0, filter = 'all', mints, onlyMints }) {
+export async function getMints({ collection, limit, offset = 0, filter = 'all', mints, onlyMints, sort = 'debt' }) {
   let query = supabase
     .from('mints')
     .select('*, collection(id, slug)', { count: 'exact' })
@@ -167,6 +167,13 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
   } else if (filter === 'active') {
     query = query.is('collection.active', true)
   }
+
+  if (sort === 'debt') {
+    query.order('debt', { ascending: false })
+  } else if (sort === 'recent') {
+    query.order('last_sale_date', { ascending: false })
+  }
+
 
   const { data, count, error } = await query
 
@@ -446,6 +453,56 @@ export async function uploadMetadata({ collection, publicKey, metadata, filename
     .getPublicUrl(filepath);
 
   return publicURL;
+}
+
+export async function getStats({ collection } = {}) {
+  if (collection) {
+    const { data: mints } = await supabase
+      .from('mints')
+      .select('count', { count: 'exact'})
+      .eq('collection', collection)
+      .limit(1)
+      .single()
+
+    const { data: mintsWithDebt } = await supabase
+      .from('mints')
+      .select('count', { count: 'exact' })
+      .eq('collection', collection)
+      .not('debt', 'is', null)
+      .limit(1)
+      .single()
+
+    const { data: salesWithoutDebt } = await supabase
+      .from('mints')
+      .select('count', { count: 'exact' })
+      .eq('collection', collection)
+      .is('debt', null)
+      .not('last_sale_transaction', 'is', null)
+      .limit(1)
+      .single()
+
+    console.log(salesWithoutDebt)
+
+    return {
+      debt: (await supabase.rpc('get_total_debt', { c_collection: collection })).data,
+      mints: mints.count,
+      mintsWithDebt: mintsWithDebt.count
+    }
+  }
+
+  const { data: debt } = await supabase.rpc('get_total_debt');
+  const { data: mints } = await supabase.rpc('get_total_mints');
+  const { data: mintsWithDebt } = await supabase.rpc('get_mints_with_debt');
+  const { data: collections } = await supabase.rpc('get_total_collections');
+  const { data: collectionsWithDebt } = await supabase.rpc('get_collections_with_debt')
+
+  return {
+    debt,
+    mints,
+    mintsWithDebt,
+    collections,
+    collectionsWithDebt
+  }
 }
 
 export async function getCollections({ limit = 25, offset = 0, filter } = {}) {

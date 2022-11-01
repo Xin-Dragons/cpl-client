@@ -16,7 +16,7 @@ function Collection({ collection }) {
   return (
     <Link href={`/collections/${collection.slug}`}>
       <div className={classnames(styles.nft)}>
-        <img src={collection.image} />
+        <img src={`https://cdn.magiceden.io/rs:fill:400:400:0:0/plain/${collection.image}`} />
           <h3>{collection.name}</h3>
       </div>
     </Link>

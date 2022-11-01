@@ -8,10 +8,9 @@ export function Nft({ nft, selected, onClick }) {
   return (
     <div className={classnames(styles.nft, { [styles.nftselected]: selected })} onClick={onClick}>
       <img
-        width={188}
-        height={188}
         // placeholder="blur"
-        src={nft?.metadata?.image}
+        width="100%"
+        src={`https://cdn.magiceden.io/rs:fill:400:400:0:0/plain/${nft?.metadata?.image}`}
       />
       <h3>{nft.name}</h3>
       {

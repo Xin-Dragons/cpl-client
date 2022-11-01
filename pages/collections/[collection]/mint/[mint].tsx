@@ -256,17 +256,13 @@ export default function Mint({ mint, history, mps }) {
                               <>
                                 <p>This item was purchased avoiding creator royalties.
                                 If you are the project owner you can update the meta
-                                to log the outstanding debt as a new trait: &quot;Debt&quot;</p>
+                                to log the outstanding debt as a new trait: &quot;CPL Debt&quot;</p>
 
                                 <p>This property can be used internally to limit access
                                 to certain featured or functionality.</p>
 
                                 <p>Alternatively you can choose to update the image and
                                 metadata until the outstanding creator royalties are paid.</p>
-
-
-                                <p>Be sure to check the transaction history to be sure
-                                the item hasn&apos;t been resold since.</p>
                               </>
 
                             </>

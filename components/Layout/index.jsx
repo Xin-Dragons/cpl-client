@@ -35,8 +35,8 @@ export function Layout({ children, page }) {
             </div>
             <nav>
               <ul>
-                <li className={page === 'add' && styles.menuselected}>
-                  <Link href="/"><a>ADD COLLECTION</a></Link>
+                <li className={page === 'dashboard' && styles.menuselected}>
+                  <Link href="/"><a>DASHBOARD</a></Link>
                 </li>
                 <li className={page === 'update' && styles.menuselected}>
                   <Link href="/collections"><a>COLLECTIONS</a></Link>

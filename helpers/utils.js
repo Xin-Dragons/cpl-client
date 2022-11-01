@@ -9,6 +9,10 @@ export function truncate(str) {
   return `${str.substring(0, 5)}...${str.substring(str.length - 5, str.length)}`
 }
 
+export function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 export function formatDate(date) {
   const ref = new Date(date)
   const months = differenceInMonths(new Date(), ref)

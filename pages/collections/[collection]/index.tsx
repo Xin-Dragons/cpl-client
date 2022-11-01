@@ -5,7 +5,7 @@ import {
 import { Connection, Transaction, SystemProgram } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WebBundlr } from "@bundlr-network/client";
-import { getCollection, getMints, getRpcUrls } from '../../../helpers/db'
+import { getCollection, getMints, getRpcUrls, getStats } from '../../../helpers/db'
 import type { NextPage } from "next";
 import { Layout, Modal, Nfts, Nft, ActivityLog } from '../../../components'
 import styles from "../../../styles/Home.module.scss";
@@ -22,11 +22,32 @@ import Image from 'next/image'
 import Pagination from '@mui/material/Pagination';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import CountUp from 'react-countup'
+
 import BigNumber from 'bignumber.js';
 import { sample, pickBy } from 'lodash';
 import bs58 from 'bs58';
 
 import axios from 'axios'
+
+function Item({ children, title }) {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h5" color="primary.main" gutterBottom>
+          { title }
+        </Typography>
+        { children }
+      </CardContent>
+    </Card>
+  )
+}
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL, {
   commitment: 'confirmed',
@@ -97,7 +118,6 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
     baseImage.composite(overlayImage.resize(500, 500), 0, 0)
 
     const buf = await baseImage.getBufferAsync(Jimp.MIME_PNG);
-    console.log(buf)
     const blob = new Blob([buf], { type:'image/png' })
 
 
@@ -131,10 +151,6 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
   function onFileChange(e) {
     setFile(e.target.files[0]);
   }
-
-  useEffect(() => {
-    console.log(file)
-  }, [file])
 
   async function turdify(e) {
     e.preventDefault()
@@ -420,15 +436,17 @@ function Turdify({ nfts, closeModal, collection, deturdify, refresh }) {
   </>
 }
 
-const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rpcUrls, usingLedger = false }) => {
+const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rpcUrls, usingLedger = false, stats }) => {
   const [selected, setSelected] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('dashboard');
   const [nfts, setNfts] = useState(initialNfts)
   const [count, setCount] = useState(initialCount)
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [loading, setLoading] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [view, setView] = useState('list');
+  const [sort, setSort] = useState('debt');
   const router = useRouter();
   const wallet = useWallet()
 
@@ -454,7 +472,6 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
   async function fetchMeta() {
     setLoading(true)
     const promises = nfts.map(async nft => {
-      console.log(nft)
       if (nft.metadata) {
         return nft;
       }
@@ -481,7 +498,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
 
   async function refreshNfts() {
     setLoading(true)
-    const { data: { data = [], count } } = await axios.post('/api/get-nfts', { filter, limit, offset: (page - 1) * limit, collection: collection && collection.id })
+    const { data: { data = [], count } } = await axios.post('/api/get-nfts', { filter, limit, offset: (page - 1) * limit, collection: collection && collection.id, sort })
     const allNfts = (
       await getNfts((data || []).map(item => item.mint), true)
     )
@@ -499,7 +516,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
 
   useEffect(() => {
     refreshNfts()
-  }, [page, filter])
+  }, [page, filter, sort])
 
   function onFilterChange(e, newValue) {
     setFilter(newValue)
@@ -656,62 +673,88 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
           value={filter}
           onChange={onFilterChange}
         >
-          <Tab value="sold" label="Sold" />
-          <Tab value="listed" label="Listed" />
-          <Tab value="all" label="All" />
-          <Tab value="restore" label="Marked" />
-          <Tab value="activity" label="Activity stream" />
+          <Tab value="dashboard" label="Dashboard" />
+          <Tab value="sold" label="Debts" />
+          <Tab value="collection" label="Collection" />
+          <Tab value="restore" label="CPL Marked" />
         </Tabs>
         {
-          filter === 'activity'
-            ? <ActivityLog collection={collection.id} />
-            : (
-              <>
-                <Nfts
-                  nfts={nfts}
-                  onNftClick={isAdmin ? onNftClick : null}
-                  selected={selected}
-                  loading={loading}
-                />
-                {
-                  count > limit && (
-                    <Pagination
-                      count={Math.ceil(count / limit)}
-                      page={page}
-                      onChange={(event, value) => setPage(value)}
-                    />
-                  )
-                }
+          filter === 'dashboard' && (
+            <Grid container spacing={4}>
+              <Grid item xs={4}>
+                <Item title="Total debt">
+                  <Typography variant="h3" color="text.disabled">
+                    ◎<CountUp end={stats.debt} duration={3} useEasing separator="," decimals={2} />
+                  </Typography>
+                </Item>
+              </Grid>
+              <Grid item xs={4}>
+                <Item title="NFTs with debt">
+                  <Typography variant="h3" color="text.disabled">
+                    <CountUp end={stats.mintsWithDebt} duration={3} useEasing separator="," />
+                  </Typography>
+                </Item>
+              </Grid>
+              <Grid item xs={4}>
+                <Item title="NFTs monitored">
+                  <Typography variant="h3" color="text.disabled">
+                    <CountUp end={stats.mints} duration={3} useEasing separator="," />
+                  </Typography>
+                </Item>
+              </Grid>
+            </Grid>
+          )
+        }
+        {
+          ['sold', 'restore', 'collection'].includes(filter) && (
+            <>
+              <Nfts
+                nfts={nfts}
+                onNftClick={isAdmin ? onNftClick : null}
+                selected={selected}
+                loading={loading}
+                sort={sort}
+                setSort={setSort}
+              />
+              {
+                count > limit && (
+                  <Pagination
+                    count={Math.ceil(count / limit)}
+                    page={page}
+                    onChange={(event, value) => setPage(value)}
+                  />
+                )
+              }
 
-                {
-                  isAdmin && (
-                    <div className={classnames(styles.nftbtnwrap)}>
-                      {
-                        collection.active
-                          ? (
-                            <>
-                              <a href="#" onClick={cancel}>Cancel</a>
-                              <a href="#" onClick={selectAll}>{allSelected ? 'DESELECT' : 'SELECT'} ALL</a>
-                              {
-                                filter === 'listed' && (
-                                  <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={markDelisted}>
-                                    MARK DELISTED
-                                  </a>
-                                )
-                              }
-                              <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={onActionClick}>
-                                {filter === 'restore' ? 'RESTORE SELECTED' : 'MARK SELECTED' }
-                              </a>
-                            </>
-                          )
-                          : <a href="#" onClick={signup}>Monitor collection</a>
-                      }
+              {
+                isAdmin && (
+                  <div className={classnames(styles.nftbtnwrap)}>
+                    {
+                      collection.active
+                        ? (
+                          <>
+                            <a href="#" onClick={cancel}>Cancel</a>
+                            <a href="#" onClick={selectAll}>{allSelected ? 'DESELECT' : 'SELECT'} ALL</a>
+                            {
+                              filter === 'listed' && (
+                                <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={markDelisted}>
+                                  MARK DELISTED
+                                </a>
+                              )
+                            }
+                            <a href="#" className={classnames(styles.turdify, { [styles.disabled]: !selected.length })} onClick={onActionClick}>
+                              {filter === 'restore' ? 'RESTORE SELECTED' : 'MARK SELECTED' }
+                            </a>
+                          </>
+                        )
+                        : <a href="#" onClick={signup}>Monitor collection</a>
+                    }
 
-                    </div>
-                  )
-                }
-              </>
-            )
+                  </div>
+                )
+              }
+            </>
+          )
         }
       </div>
     </Layout>
@@ -723,7 +766,8 @@ export default Home;
 export async function getServerSideProps(ctx) {
   const collection = await getCollection({ slug: ctx.query.collection })
   const { data = [], count } = await getMints({ collection: collection.id, limit: 20 })
-  console.log(data)
+  const stats = await getStats({ collection: collection.id });
+
   const rpcUrls = await getRpcUrls();
 
   const allNfts = (
@@ -742,7 +786,8 @@ export async function getServerSideProps(ctx) {
       collection,
       nfts: allNfts,
       count,
-      rpcUrls
+      rpcUrls,
+      stats
     }
   }
 }
