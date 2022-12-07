@@ -7,11 +7,9 @@ const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL, 'finalized');
 const metaplex = new Metaplex(connection);
 
 export async function getNft(mint) {
-  console.log(mint)
   const nfts = await metaplex
     .nfts()
     .findAllByMintList({ mints: [new PublicKey(mint)] })
-    .run();
 
   if (!nfts[0]) {
     return {}
@@ -29,7 +27,6 @@ export async function getNfts(mints, getMeta) {
   const nfts = await metaplex
     .nfts()
     .findAllByMintList({ mints: mints.map(mint => new PublicKey(mint)) })
-    .run();
 
   if (!getMeta) {
     return nfts;

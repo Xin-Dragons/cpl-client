@@ -490,11 +490,11 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
     setLoading(false)
   }
 
-  useEffect(() => {
-    if (nfts.find(nft => !nft.metadata)) {
-      fetchMeta()
-    }
-  }, [nfts])
+  // useEffect(() => {
+  //   if (nfts.find(nft => !nft.metadata)) {
+  //     fetchMeta()
+  //   }
+  // }, [nfts])
 
   async function refreshNfts() {
     setLoading(true)
@@ -680,29 +680,7 @@ const Home: NextPage = ({ collection, nfts: initialNfts, count: initialCount, rp
         </Tabs>
         {
           filter === 'dashboard' && (
-            <Grid container spacing={4}>
-              <Grid item xs={4}>
-                <Item title="Total debt">
-                  <Typography variant="h3" color="text.disabled">
-                    ◎<CountUp end={stats.debt} duration={3} useEasing separator="," decimals={2} />
-                  </Typography>
-                </Item>
-              </Grid>
-              <Grid item xs={4}>
-                <Item title="NFTs with debt">
-                  <Typography variant="h3" color="text.disabled">
-                    <CountUp end={stats.mintsWithDebt} duration={3} useEasing separator="," />
-                  </Typography>
-                </Item>
-              </Grid>
-              <Grid item xs={4}>
-                <Item title="NFTs monitored">
-                  <Typography variant="h3" color="text.disabled">
-                    <CountUp end={stats.mints} duration={3} useEasing separator="," />
-                  </Typography>
-                </Item>
-              </Grid>
-            </Grid>
+            
           )
         }
         {

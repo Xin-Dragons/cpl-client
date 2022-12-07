@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { v4 as uuid } from "uuid";
 import axios from 'axios'
-import { isUndefined } from 'lodash'
+import { isUndefined, chunk, flatten } from 'lodash'
 export const supabase = createClient(process.env.NEXT_PUBLIC_DB_URL, process.env.DB_SECRET);
 
 export async function createCollection({ slug, mints, collection, type, publicKey }) {
@@ -127,7 +127,31 @@ export async function getCollection({ slug, update_authority }) {
   return data[0];
 }
 
-export async function getAllMints() {
+export async function getAllMints({ mints }) {
+  if (mints) {
+    const chunks = chunk(mints, 100);
+
+    const nfts = flatten(
+      await Promise.all(
+        chunks.map(async c => {
+          const { data, error } = await supabase
+            .from('mints')
+            .select('*')
+            .in('mint', c)
+
+          if (error) {
+            console.log(error)
+            throw new Error('Error looking up mints')
+          }
+
+          return data
+        })
+      )
+    )
+
+    console.log(nfts)
+    return nfts
+  }
   const { data, error } = await supabase
     .from('mints')
     .select('*, collection(slug)')
@@ -139,7 +163,7 @@ export async function getAllMints() {
   return data;
 }
 
-export async function getMints({ collection, limit, offset = 0, filter = 'all', mints, onlyMints, sort = 'debt' }) {
+export async function getMints({ collection, limit, offset = 0, filter = 'all', onlyMints, sort = 'debt' }) {
   let query = supabase
     .from('mints')
     .select('*, collection(id, slug)', { count: 'exact' })
@@ -176,6 +200,7 @@ export async function getMints({ collection, limit, offset = 0, filter = 'all', 
 
 
   const { data, count, error } = await query
+  console.log(error)
 
   if (error && error.length) {
     console.log(error)
