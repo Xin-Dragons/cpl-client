@@ -18,13 +18,17 @@ import { AppProps } from "next/app";
 import { FC, useMemo } from "react";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { DataProvider } from "../context";
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
       main: 'rgb(228, 37, 117)'
-    }
+    },
+    secondary: {
+      main: '#00C49F'
+    },
   },
 });
 
@@ -33,6 +37,7 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
+  console.log(pageProps)
   const network = WalletAdapterNetwork.Mainnet;
 
   // You can also provide a custom RPC endpoint
@@ -59,8 +64,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <CssBaseline />
-            <Component {...pageProps} />
+            <DataProvider collection={pageProps.collection} publicKey={pageProps.publicKey}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </DataProvider>
           </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>

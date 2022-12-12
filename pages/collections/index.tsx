@@ -1,113 +1,72 @@
-import { Layout, ActivityLog } from '../../components';
-import Link from 'next/link';
-import { getNft } from '../../helpers';
-import { getCollections } from '../../helpers/db'
-import { useState, useEffect } from 'react'
-import { sample } from 'lodash'
-import classnames from 'classnames'
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Pagination from '@mui/material/Pagination';
-import axios from 'axios'
+import { Button, Card, CardContent, Grid, TextField, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import { useState } from "react";
+import { Layout, Spinner } from "../../components";
+import { MagicEdenImage } from "../../components/MagicEdenImage";
+import { MainTitle } from "../../components/MainTitle";
+import { useData } from "../../context";
+import toast from 'react-hot-toast'
+import Link from "next/link";
 
-import styles from '../../styles/Home.module.scss'
-
-function Collection({ collection }) {
-  return (
-    <Link href={`/collections/${collection.slug}`}>
-      <div className={classnames(styles.nft)}>
-        <img src={`https://cdn.magiceden.io/rs:fill:400:400:0:0/plain/${collection.image}`} />
-          <h3>{collection.name}</h3>
-      </div>
-    </Link>
-  )
-}
-
-export default function Collections({ collections: initialCollections, count: initialCount }) {
-  const [filter, setFilter] = useState('all');
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(25)
-  const [count, setCount] = useState(initialCount)
-  const [collections, setCollections] = useState(initialCollections)
-
-  function onFilterChange(e, filter) {
-    setFilter(filter)
+export default function Collections() {
+  const { collections } = useData()
+  const [search, setSearch] = useState('');
+  function handleChange(e) {
+    setSearch(e.target.value)
   }
 
-  async function getCollections() {
-    const offset = (page - 1) * limit;
-    console.log(limit, offset, filter)
-    const { data: { collections = [], count } } = await axios.get('/api/get-collections', { params: { limit, offset, filter } })
-    setCollections(collections)
-    setCount(count)
-  }
-
-  useEffect(() => {
-    setPage(1)
-  }, [filter])
-
-  useEffect(() => {
-    getCollections()
-  }, [page, filter, limit])
-
+  const filtered = collections.filter(c => {
+    const name = c.name || c.id;
+    return !search || name.toLowerCase().includes(search.toLowerCase())
+  });
+  
   return (
-    <Layout page="update">
-      <div className={classnames(styles.grid)}>
-        <h2 className={classnames(styles.pagetitle)}>
-          {
-            filter === 'active'
-              ? 'Collections currently protected by CPL'
-              : 'All collections'
-          }
-        </h2>
-        {
-          // <Tabs
-          //   value={filter}
-          //   onChange={onFilterChange}
-          // >
-          //   <Tab value="all" label="All" />
-          //   <Tab value="active" label="Protected" />
-          //   <Tab value="inactive" label="Monitored" />
-          //   <Tab value="logs" label="Activity stream" />
-          // </Tabs>
-        }
-        {
-          filter === 'logs'
-            ? <ActivityLog />
-            : (
-              <>
-              <div className={classnames(styles.nftswrap)}>
-                {
-                  collections.map(collection => <Collection key={collection.id} collection={collection} />)
-                }
-              </div>
+    <Layout page="collections">
+      <MainTitle>Collections</MainTitle>
+      <Box mt={2}>
+        <Card>
+          <CardContent>
+            <Grid container spacing={2}>
+              <Grid item xs={8}>
+                <TextField fullWidth id="outlined-basic" label="Search" variant="outlined" value={search} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={4}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button variant="contained" size="large" onClick={() => toast('Coming soon...\n\nContact gentlemonke@xindragons.io to be added')}>Add collection</Button>
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} mt={2}>
               {
-                Math.ceil(count / limit) > 1 && (
-                  <Pagination
-                    count={Math.ceil(count / limit)}
-                    page={page}
-                    onChange={(event, value) => setPage(value)}
-                  />
-                )
+                collections.length
+                  ? filtered.length
+                    ? filtered.map(c => {
+                      return (
+                        
+                        <Grid item xs={3}>
+                          <Link href={`/collections/${c.id}`}>
+                            <a>
+                            <Card>
+                              <MagicEdenImage width="100%" height="100%" src={c.image} />
+                              <CardContent>
+                                <Typography variant="h5">{c.name}</Typography>
+                              </CardContent>
+                            </Card>
+                            </a>
+                          </Link>
+                        </Grid>
+                      )
+                    })
+                    : <Grid item xs={12}><Typography variant="h2" color="text.secondary" sx={{ textAlign: 'center', display: 'block' }}>No collections found</Typography></Grid>
+                  : <Grid item xs={12}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  }}><Spinner /></Box></Grid>
+                
+                  
               }
-
-              </>
-            )
-        }
-
-      </div>
+              
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
     </Layout>
   )
-}
-
-export async function getServerSideProps() {
-  const { data, count } = await getCollections({ limit: 25, offset: 0, filter: 'all' });
-  console.log(data.length)
-
-  return {
-    props: {
-      collections: data,
-      count
-    }
-  }
 }

@@ -170,6 +170,21 @@ dl.inline {
   transition: all 0.5s;
 }
 
+.link {
+  color: rgb(228, 37, 117);
+
+  &:hover {
+    color: white;
+  }
+}
+
+.linkRow {
+  cursor: pointer;
+  :hover {
+    color: rgb(228, 37, 117);
+  }
+}
+
 .boxwrap a:hover,
 .nftswrap a:hover,
 .turdifywrap a:hover {

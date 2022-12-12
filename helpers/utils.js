@@ -4,13 +4,28 @@ import {
   differenceInHours,
   differenceInMinutes,
 } from 'date-fns'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 export function truncate(str) {
+  if (!str) {
+    return;
+  }
   return `${str.substring(0, 5)}...${str.substring(str.length - 5, str.length)}`
 }
 
 export function numberWithCommas(x) {
+  if (!x) {
+    return
+  }
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export function lamportsToSol(number) {
+  if (!number) {
+    return 0.00;
+  }
+
+  return (number / LAMPORTS_PER_SOL).toFixed(2)
 }
 
 export function formatDate(date) {
