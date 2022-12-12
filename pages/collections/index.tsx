@@ -43,7 +43,7 @@ export default function Collections() {
                     ? filtered.map(c => {
                       return (
                         
-                        <Grid item xs={3}>
+                        <Grid item xs={3} key={c.id}>
                           <Link href={`/collections/${c.id}`}>
                             <a>
                             <Card>

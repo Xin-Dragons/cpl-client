@@ -28,9 +28,9 @@ function RecentSales() {
           </TableHead>
           <TableBody>
             {
-              recentSales.map(s => {
+              recentSales.map((s, index) => {
                 return (
-                  <TableRow>
+                  <TableRow key={index}>
                     <TableCell><MagicEdenImage height={50} width={50} src={s.image} /></TableCell>
                     <TableCell>◎{s.sale_price}</TableCell>
                     <TableCell>{lamportsToSol(s.royalties_paid || (s.settled && s.debt_lamports))}</TableCell>
@@ -63,7 +63,7 @@ function Leaderboard() {
             {
               leaderboard.map(item => {
                 return (
-                  <TableRow>
+                  <TableRow key={item.public_key}>
                     <TableCell>
                       <Link href={`/wallet/${item.public_key}`}><a className={styles.link}>{truncate(item.public_key)}</a></Link></TableCell>
                     <TableCell>{(

@@ -49,7 +49,7 @@ export default function Home() {
                   {
                     collections.map(c => {
                       return (
-                        <TableRow onClick={goto(`/collections/${c.id}`)} sx={{
+                        <TableRow onClick={goto(`/collections/${c.id}`)} key={c.id} sx={{
                           cursor: 'pointer',
                           ':hover': {
                             '*': {

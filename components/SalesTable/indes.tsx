@@ -111,13 +111,13 @@ function MintRow({ mint, mintSort }) {
         }
       </TableCell>
       <TableCell>
-        <a href={`https://solscan.io/token/${mint.mint}`} target="_blank">{truncate(mint.mint)}</a>
+        <a href={`https://solscan.io/token/${mint.mint}`} target="_blank" rel="noreferrer">{truncate(mint.mint)}</a>
       </TableCell>
       <TableCell>
-        <a href={`https://solscan.io/account/${mint.holder}`} target="_blank">{truncate(mint.holder)}</a>
+        <a href={`https://solscan.io/account/${mint.holder}`} target="_blank" rel="noreferrer">{truncate(mint.holder)}</a>
       </TableCell>
       <TableCell>
-        {mint.buyer &&<a href={`https://solscan.io/account/${mint.buyer}`} target="_blank">{truncate(mint.buyer)}</a>}
+        {mint.buyer &&<a href={`https://solscan.io/account/${mint.buyer}`} target="_blank" rel="noreferrer">{truncate(mint.buyer)}</a>}
       </TableCell>
       {
         mintSort !== 'royalties_paid' && (
@@ -179,7 +179,7 @@ export const SalesTable: FC = () => {
               </TableHead>
               <TableBody>
               {
-                mints.map(mint => <MintRow mint={mint} mintSort={mintSort} />)
+                mints.map(mint => <MintRow key={mint.mint} mint={mint} mintSort={mintSort} />)
               }
             </TableBody>
             </Table>
