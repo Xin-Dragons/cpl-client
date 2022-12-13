@@ -15,16 +15,21 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 import { AppProps } from "next/app";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { DataProvider } from "../context";
+import { subscribe, unsubscribe } from "../helpers";
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
       main: 'rgb(228, 37, 117)'
-    }
+    },
+    secondary: {
+      main: '#00C49F'
+    },
   },
 });
 
@@ -34,6 +39,13 @@ require("../styles/globals.css");
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const network = WalletAdapterNetwork.Mainnet;
+
+  useEffect(() => {
+    subscribe();
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   // You can also provide a custom RPC endpoint
   const endpoint = process.env.NEXT_PUBLIC_RPC_URL;
@@ -59,8 +71,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <CssBaseline />
-            <Component {...pageProps} />
+            <DataProvider collection={pageProps.collection} publicKey={pageProps.publicKey}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </DataProvider>
           </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>

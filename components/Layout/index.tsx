@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import styles from "./style.module.scss";
+import { Box, Container } from "@mui/material";
 
 export function Layout({ children, page }) {
   return (
@@ -38,11 +39,14 @@ export function Layout({ children, page }) {
                 <li className={page === 'dashboard' && styles.menuselected}>
                   <Link href="/"><a>DASHBOARD</a></Link>
                 </li>
-                <li className={page === 'update' && styles.menuselected}>
+                <li className={page === 'collections' && styles.menuselected}>
                   <Link href="/collections"><a>COLLECTIONS</a></Link>
                 </li>
                 <li className={page === 'wallet' && styles.menuselected}>
                   <Link href="/wallet"><a>WALLET</a></Link>
+                </li>
+                <li className={page === 'wtf' && styles.menuselected}>
+                  <Link href="/wtf"><a>WTF</a></Link>
                 </li>
               </ul>
             </nav>
@@ -50,7 +54,11 @@ export function Layout({ children, page }) {
           </div>
         </div>
       </header>
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main}>
+        <Container>
+          <Box mt={10}>{children}</Box>
+        </Container>
+      </main>
       <div className={styles.btt}>
         <a href="#">
           <img src="/up-sign.svg" alt="back to top" />
