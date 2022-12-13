@@ -119,12 +119,12 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
 
   return (
     <Grid container spacing={2} mt={2}>
-      <Grid item xs={4}>
+      <Grid item lg={4} md={6} xs={12}>
         <PaidUnpaidChart all={true} />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item lg={4} md={6} xs={12}>
         <Stack spacing={2} sx={{ height: '100%' }}>
-          <Card sx={{ height: '50%' }}>
+          <Card sx={{ height: { xs: '50%' } }}>
             <CardContent>
               <Typography variant="h4" align="center" gutterBottom>CPL Repaid</Typography>
               <Typography variant="h2" align="center" gutterBottom color="secondary">◎<CountUp duration={4} end={summary.repaid ? summary.repaid / LAMPORTS_PER_SOL : 0} useEasing={true} decimals={2} separator="," /></Typography>
@@ -144,7 +144,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
           </Card>
         </Stack>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item lg={4} md={12} xs={12}>
         <Card sx={{ height: 390, overflow: 'hidden' }}>
           {
             showRecentSales

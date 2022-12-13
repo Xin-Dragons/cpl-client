@@ -42,12 +42,12 @@ export default function Home() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{fontSize: '1.3em'}}></TableCell>
-                    <TableCell sx={{fontSize: '1.3em'}}>Collection</TableCell>
-                    <TableCell sx={{fontSize: '1.3em'}}>Total Sales</TableCell>
-                    <TableCell sx={{fontSize: '1.3em'}}>Royalties Evaded</TableCell>
-                    <TableCell sx={{fontSize: '1.3em'}}>Royalties Paid</TableCell>
-                    <TableCell sx={{fontSize: '1.3em'}}>Royalty Payment Rate</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}></TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Collection</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Total Sales</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalties Evaded</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalties Paid</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalty Payment Rate</TableCell>
                   </TableRow>
                 </TableHead>
                 {
@@ -74,11 +74,11 @@ export default function Home() {
                             <TableCell sx={{fontSize: '1.3em'}}>
                               <MagicEdenImage height={75} width={75} src={c.image} />
                             </TableCell>
-                            <TableCell sx={{fontSize: '1.3em'}}>{c.name}</TableCell>
-                            <TableCell sx={{fontSize: '1.3em'}}>◎{numberWithCommas(c.total_sales?.toFixed(2))}</TableCell>
-                            <TableCell sx={{fontSize: '1.3em'}}>◎{lamportsToSol(c.total_debt)}</TableCell>
-                            <TableCell sx={{fontSize: '1.3em'}}>◎{lamportsToSol(c.total_paid)}</TableCell>
-                            <TableCell sx={{fontSize: '1.3em'}}>{(c.total_paid / c.expected_royalties * 100).toFixed(2)}%</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>{c.name}</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{numberWithCommas(c.total_sales?.toFixed(2))}</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{lamportsToSol(c.total_debt)}</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{lamportsToSol(c.total_paid)}</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>{(c.total_paid / c.expected_royalties * 100).toFixed(2)}%</TableCell>
                           </TableRow>
                         )
                       })
