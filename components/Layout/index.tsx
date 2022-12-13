@@ -12,7 +12,7 @@ export function Layout({ children, page }) {
         <title>Creator Protection League</title>
         <meta
           name="description"
-          content="Set fees for NFT owners traded without royalties"
+          content="Monitor and incentivise NFT royalty payment"
         />
         <link
           rel="preload"
