@@ -65,6 +65,8 @@ export default function WTF() {
             <CardContent>
               <Typography variant="h4">WTF is with the included collections?</Typography>
               <Typography variant="h6">We added all collections already in our system: Stakooor, Rafflooor and Auctionooor customers so they can utilise this data in our applications. We then added a few high MC projects at random, and some from requests - ping me if you want your project to be added.</Typography>
+              <br />
+              <Typography variant="h6">CPL sales begin on 2022-10-19, any sales before this are not included.</Typography>
             </CardContent>
           </Card>
         </Box>

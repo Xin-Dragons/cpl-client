@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -19,7 +20,7 @@ const Wallet: FC = () => {
 
   return (
     <Layout page="wallet">
-      <MainTitle>Loading Wallet...</MainTitle>
+      <MainTitle>{ wallet.connected ? 'Loading Wallet...' : 'Wallet disconnected' }</MainTitle>
     </Layout>
   )
 }

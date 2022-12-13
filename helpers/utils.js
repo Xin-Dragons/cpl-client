@@ -25,7 +25,7 @@ export function lamportsToSol(number) {
     return 0.00;
   }
 
-  return (number / LAMPORTS_PER_SOL).toFixed(2)
+  return numberWithCommas((number / LAMPORTS_PER_SOL).toFixed(2))
 }
 
 export function formatDate(date) {
