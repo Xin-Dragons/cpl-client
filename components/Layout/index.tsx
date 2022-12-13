@@ -45,6 +45,9 @@ export function Layout({ children, page }) {
                 <li className={page === 'wallet' && styles.menuselected}>
                   <Link href="/wallet"><a>WALLET</a></Link>
                 </li>
+                <li className={page === 'wtf' && styles.menuselected}>
+                  <Link href="/wtf"><a>WTF</a></Link>
+                </li>
               </ul>
             </nav>
             <WalletMultiButton />

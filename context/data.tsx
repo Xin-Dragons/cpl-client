@@ -8,11 +8,13 @@ const initial = {
   collections: [],
   collectionInfo: {},
   mints: [],
-  mintSort: '',
-  setMintSort: () => {},
+  sort: '',
+  setSort: () => {},
   publicKey: null,
   setPublicKey: () => {},
-  recentSales: []
+  recentSales: [],
+  page: 1,
+  setPage: () => {}
 }
 
 const DataContext = createContext(initial);
@@ -23,16 +25,22 @@ interface Props {
 
 export const DataProvider: FC<Props> = ({ children, collection: initialCollection, publicKey: initialPublicKey }) => {
   const [collection, setCollection] = useState(initialCollection)
+  const [allCollections, setAllCollections] = useState([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+  const [recentSalesLoading, setRecentSalesLoading] = useState(false);
+  const [mintsLoading, setMintsLoading] = useState(false);
+  const [collectionsLoading, setCollectionsLoading] = useState(false);
+  const [allCollectionsLoading, setAllCollectionsLoading] = useState(false);
   const [summary, setSummary] = useState([]);
   const [leaderboard, setLeaderboard] = useState<[]>([]);
   const [collections, setCollections] = useState<[]>([]);
   const [publicKey, setPublicKey] = useState<string | null>(initialPublicKey);
   const [mints, setMints] = useState<[]>([])
   const [collectionInfo, setCollectionInfo] = useState<{}>([])
-  const [mintLimit, setMintLimit] = useState(20);
-  const [mintOffset, setMintOffset] = useState(0);
-  const [mintSort, setMintSort] = useState('royalties_paid');
+  const [limit, setLimit] = useState(20);
+  const [sort, setSort] = useState('royalties_paid');
   const [recentSales, setRecentSales] = useState([]);
+  const [page, setPage] = useState(1);
   const router = useRouter();
 
   async function fetchData() {
@@ -41,23 +49,34 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     getCollections();
     getCollectionInfo();
     getMints();
-    getRecentSales;
+    getRecentSales();
+    getAllCollections()
+  }
+
+  async function getAllCollections() {
+    setAllCollectionsLoading(true)
+    console.log('getting')
+    const { data } = await axios.get('/api/get-all-collections')
+    console.log('got', data)
+    setAllCollections(data)
+    setAllCollectionsLoading(false);
   }
 
   useEffect(() => {
     const { collection, publicKey  } = router.query;
     setCollection(collection);
     setPublicKey(publicKey);
+    setPage(1)
+    setLimit(20)
+    setSort('royalties_paid')
   }, [router.query])
 
   useEffect(() => {
     getMints()
-  }, [mintSort, mintLimit, mintOffset, publicKey])
+    getCollections()
+  }, [sort, limit, page, publicKey])
 
   async function getCollectionInfo() {
-    if (!collection) {
-      return;
-    }
     const options = {
       params: {
         collection
@@ -75,12 +94,14 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     const options = {
       params: {
         publicKey,
-        limit: 10
+        limit: 20
       }
     }
+    setRecentSalesLoading(true)
     setRecentSales([])
     const { data } = await axios.get('/api/get-recent-sales', options)
     setRecentSales(data)
+    setRecentSalesLoading(false)
   }
 
   useEffect(() => {
@@ -92,19 +113,22 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     if (!collection && !publicKey) {
       return;
     }
+
+    setMintsLoading(true)
     
     const options = {
       params: {
         collection,
-        limit: mintLimit,
-        offset: mintOffset,
-        orderBy: mintSort,
+        limit,
+        page,
+        orderBy: sort,
         publicKey
       }
     }
     setMints([])
     const { data } = await axios.get('/api/get-mints', options)
     setMints(data)
+    setMintsLoading(false)
   }
 
   async function getSummary() {
@@ -123,12 +147,14 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     const options = {
       params: {
         collection,
-        limit: 10
+        limit: 20
       }
     }
+    setLeaderboardLoading(true)
     setLeaderboard([])
     const { data } = await axios.get('/api/get-leaderboard', options)
     setLeaderboard(data)
+    setLeaderboardLoading(false)
   }
 
   async function getCollections() {
@@ -137,11 +163,14 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     }
     const options = {
       params: {
-        limit: 10
+        limit,
+        page
       }
     }
+    setCollectionsLoading(true)
     const { data } = await axios.get('/api/get-collections', options)
     setCollections(data)
+    setCollectionsLoading(false)
   }
 
   useEffect(() => {
@@ -155,10 +184,19 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
       collections,
       mints,
       collectionInfo,
-      mintSort,
-      setMintSort,
+      sort,
+      setSort,
       publicKey,
-      recentSales
+      recentSales,
+      page,
+      limit,
+      setPage,
+      mintsLoading,
+      collectionsLoading,
+      allCollections,
+      allCollectionsLoading,
+      leaderboardLoading,
+      recentSalesLoading
       }}>
       { children }
     </DataContext.Provider>

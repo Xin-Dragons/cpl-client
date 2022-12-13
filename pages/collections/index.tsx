@@ -8,14 +8,29 @@ import { useData } from "../../context";
 import toast from 'react-hot-toast'
 import Link from "next/link";
 
+function toTitleCase(str) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
+
+function namify(id) {
+  return toTitleCase(
+    id.replace(/-/g, ' ')
+  )
+}
+
 export default function Collections() {
-  const { collections } = useData()
+  const { allCollections, allCollectionsLoading } = useData()
   const [search, setSearch] = useState('');
   function handleChange(e) {
     setSearch(e.target.value)
   }
 
-  const filtered = collections.filter(c => {
+  const filtered = allCollections.filter(c => {
     const name = c.name || c.id;
     return !search || name.toLowerCase().includes(search.toLowerCase())
   });
@@ -38,8 +53,9 @@ export default function Collections() {
             </Grid>
             <Grid container spacing={2} mt={2}>
               {
-                collections.length
-                  ? filtered.length
+                allCollectionsLoading
+                  ? <Grid item xs={12}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  }}><Spinner /></Box></Grid>
+                  : filtered.length
                     ? filtered.map(c => {
                       return (
                         
@@ -49,7 +65,7 @@ export default function Collections() {
                             <Card>
                               <MagicEdenImage width="100%" height="100%" src={c.image} />
                               <CardContent>
-                                <Typography variant="h5">{c.name}</Typography>
+                                <Typography variant="h5">{c.name || namify(c.id)}</Typography>
                               </CardContent>
                             </Card>
                             </a>
@@ -58,9 +74,6 @@ export default function Collections() {
                       )
                     })
                     : <Grid item xs={12}><Typography variant="h2" color="text.secondary" sx={{ textAlign: 'center', display: 'block' }}>No collections found</Typography></Grid>
-                  : <Grid item xs={12}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  }}><Spinner /></Box></Grid>
-                
-                  
               }
               
             </Grid>

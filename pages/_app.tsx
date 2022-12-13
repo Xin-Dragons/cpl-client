@@ -15,10 +15,11 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 import { AppProps } from "next/app";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { DataProvider } from "../context";
+import { subscribe, unsubscribe } from "../helpers";
 
 const darkTheme = createTheme({
   palette: {
@@ -37,8 +38,14 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-  console.log(pageProps)
   const network = WalletAdapterNetwork.Mainnet;
+
+  useEffect(() => {
+    subscribe();
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   // You can also provide a custom RPC endpoint
   const endpoint = process.env.NEXT_PUBLIC_RPC_URL;

@@ -3,12 +3,10 @@ import axios from "axios";
 export default async function handler(req, res) {
   const { collection } = req.query
   try {
-    const options = {
-      params: {
-        collection
-      }
-    }
-    const { data } = await axios.get(`${process.env.API_URL}/collections/${collection}`, options);
+    const path = collection ? `collections/${collection}` : 'collections/collection-info'
+    const { data } = await axios.get(`${process.env.API_URL}/${path}`);
+
+    console.log('aaataa', data)
 
     res.status(200).json(data);
   } catch (err) {

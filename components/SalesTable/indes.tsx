@@ -1,5 +1,5 @@
-import { Grid, Card, CardContent, Typography, Box, FormControl, InputLabel, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Button } from "@mui/material";
-import { LAMPORTS_PER_SOL, Transaction, Connection, PublicKey } from '@solana/web3.js';
+import { Grid, Card, CardContent, Typography, Box, FormControl, InputLabel, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Button, TableFooter, Pagination } from "@mui/material";
+import { LAMPORTS_PER_SOL, Transaction, PublicKey } from '@solana/web3.js';
 import { lamportsToSol, truncate } from "../../helpers";
 import { FC, useEffect, useState } from "react";
 import { useData } from "../../context";
@@ -10,10 +10,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useWallet } from "@solana/wallet-adapter-react";
 import base58 from "bs58";
-import { Metaplex } from "@metaplex-foundation/js";
-
-const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL as string, 'confirmed');
-const metaplex = new Metaplex(connection)
+import { metaplex } from '../../helpers';
 
 interface PayButtonProps {
   mint: string
@@ -70,7 +67,7 @@ const PayButton: FC<PayButtonProps> = ({ mint, onDebtRepaid }) => {
   return <Button variant="outlined" onClick={payRoyalties}>Pay royalties</Button>
 }
 
-function MintRow({ mint, mintSort }) {
+function MintRow({ mint, sort }) {
   const [image, setImage] = useState(mint.image)
   const [name, setName] = useState(mint.name || mint.meta_name)
   const [debt, setDebt] = useState(mint.outstanding_debt);
@@ -107,7 +104,7 @@ function MintRow({ mint, mintSort }) {
       <TableCell>{formatDate(mint.sale_date)}</TableCell>
       <TableCell>◎
         {
-          lamportsToSol(mintSort === 'royalties_paid' ? royaltiesPaid : debt)
+          lamportsToSol(sort === 'royalties_paid' ? royaltiesPaid : debt)
         }
       </TableCell>
       <TableCell>
@@ -120,7 +117,7 @@ function MintRow({ mint, mintSort }) {
         {mint.buyer &&<a href={`https://solscan.io/account/${mint.buyer}`} target="_blank" rel="noreferrer">{truncate(mint.buyer)}</a>}
       </TableCell>
       {
-        mintSort !== 'royalties_paid' && (
+        sort !== 'royalties_paid' && (
           <TableCell>
             {debt > 0 && <PayButton mint={mint.mint} onDebtRepaid={onDebtRepaid} />}
           </TableCell>
@@ -131,10 +128,14 @@ function MintRow({ mint, mintSort }) {
 }
 
 export const SalesTable: FC = () => {
-  const { mints, mintSort, setMintSort } = useData();
+  const { mints, sort, setSort, page, setPage, mintsLoading, limit, collectionInfo } = useData();
   
   function handleChange(e) {
-    setMintSort(e.target.value);
+    setSort(e.target.value);
+  }
+
+  function handlePageChange(e, page: number) {
+    setPage(page)
   }
 
   return (
@@ -149,7 +150,7 @@ export const SalesTable: FC = () => {
                 <Select
                   labelId="sort-by-label"
                   id="sort-by"
-                  value={mintSort}
+                  value={sort}
                   label="Sort by"
                   onChange={handleChange}
                 >
@@ -166,23 +167,38 @@ export const SalesTable: FC = () => {
                   <TableCell>Last sale</TableCell>
                   <TableCell>
                     {
-                      mintSort === 'royalties_paid' ? 'Royalties paid' : 'Outstanding debt'
+                      sort === 'royalties_paid' ? 'Royalties paid' : 'Outstanding debt'
                     }
                   </TableCell>
                   <TableCell>Mint address</TableCell>
                   <TableCell>Holder</TableCell>
                   <TableCell>Purchased by</TableCell>
                   {
-                    mintSort !== 'royalties_paid' && <TableCell></TableCell>
+                    sort !== 'royalties_paid' && <TableCell></TableCell>
                   }
                 </TableRow>
               </TableHead>
-              <TableBody>
               {
-                mints.map(mint => <MintRow key={mint.mint} mint={mint} mintSort={mintSort} />)
+                mintsLoading
+                  ? <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={sort === 'royalties_paid' ? 8 : 9}>
+                        <Box mt={2} mb={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Spinner />
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                  :<TableBody>
+                  {
+                    mints.map(mint => <MintRow key={mint.mint} mint={mint} sort={sort} />)
+                  }
+                </TableBody>
               }
-            </TableBody>
             </Table>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }} mt={2}>
+              <Pagination count={Math.floor(collectionInfo.num_mints / limit)} page={page} onChange={handlePageChange} />
+            </Box>
           </CardContent>
         </Card>
       </Grid>

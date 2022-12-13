@@ -1,17 +1,17 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { collection, limit, offset, orderBy, publicKey } = req.query
+  const { collection, limit, page, orderBy, publicKey } = req.query
   try {
     const options = {
       params: {
         limit,
-        offset,
+        page,
         orderBy,
         publicKey
       }
     }
-    
+
     const path = collection ? `collections/${collection}/mints` : `wallet/${publicKey}/mints`
 
     const { data } = await axios.get(`${process.env.API_URL}/${path}`, options);

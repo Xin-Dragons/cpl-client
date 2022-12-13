@@ -1,11 +1,12 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { limit } = req.query
+  const { limit, page } = req.query
   try {
     const options = {
       params: {
-        limit
+        limit,
+        page
       }
     }
     const { data } = await axios.get(`${process.env.API_URL}/collections`, options);
