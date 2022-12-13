@@ -9,7 +9,7 @@ body {
   padding: 0;
   margin: 0;
   font-family: "Raleway", sans-serif;
-  background: #14141f;
+  background-color: #14141f !important;
   color: #fff;
 }
 

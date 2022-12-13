@@ -25,7 +25,8 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     background: {
-      paper: 'none'
+      paper: 'none',
+      default: '#14141f'
     },
     primary: {
       main: 'rgb(228, 37, 117)'
