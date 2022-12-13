@@ -41,7 +41,6 @@ export async function getDebtRepaymentTransaction({ publicKey, nft, debt }) {
 }
 
 export async function getTransactions(items, updateAuthority) {
-  console.log(items)
   const promises = items.map(async item => {
     const mint = await Metadata.getPDA(new PublicKey(item.mint));
     const ownedMetadata = await Metadata.load(connection, mint)
@@ -52,8 +51,6 @@ export async function getTransactions(items, updateAuthority) {
       ...metadataDataData,
       uri: item.uri
     };
-
-    console.log(newMetadataData)
 
     const md = await Metadata.getPDA(item.mint);
 

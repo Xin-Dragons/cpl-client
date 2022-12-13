@@ -40,18 +40,12 @@ export function PaidUnpaidChart({ collection, all }: { collection?: string, all?
       ]
     )
     setPercentPaid((summary.paid / summary.expected_royalties * 100).toFixed(2));
-  }, [summary])
-
-
-  useEffect(() => {
-    console.log(chartData)
-  }, [chartData])
-  
+  }, [summary])  
 
   return (
     <Card sx={{ height: '100%' }}>
       <CardContent sx={{ height: '100%' }}>
-        <Typography variant="h4" align="center">Royalty Rate</Typography>
+        <Typography variant="h4" align="center">Percent Paid</Typography>
         {
           chartData.length
             ? (

@@ -120,29 +120,23 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
   return (
     <Grid container spacing={2} mt={2}>
       <Grid item lg={4} md={6} xs={12}>
-        <PaidUnpaidChart all={true} />
-      </Grid>
-      <Grid item lg={4} md={6} xs={12}>
         <Stack spacing={2} sx={{ height: '100%' }}>
-          <Card sx={{ height: { xs: '50%' } }}>
+          <Card>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>CPL Repaid</Typography>
-              <Typography variant="h2" align="center" gutterBottom color="secondary">◎<CountUp duration={4} end={summary.repaid ? summary.repaid / LAMPORTS_PER_SOL : 0} useEasing={true} decimals={2} separator="," /></Typography>
+              <Typography variant="h4" align="center" gutterBottom>Effective Rate</Typography>
+              <Typography variant="h2" align="center" gutterBottom color="primary"><CountUp end={summary.paid / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
             </CardContent>
           </Card>
-          <Card sx={{ height: '50%' }}>
+          <Card>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>{ showTotalPaid ? 'Total Royalties Paid' : 'NFTs Monitored' }</Typography>
-              <Typography variant="h2" align="center" gutterBottom>
-                {
-                  showTotalPaid
-                    ? <>◎<CountUp end={summary.paid ? summary.paid / LAMPORTS_PER_SOL : 0} duration={4} decimals={2} separator="," useEasing={true} /></>
-                    : <CountUp end={collectionInfo.num_mints || 0} duration={4} separator="," useEasing={true} />
-                  }
-              </Typography>
+              <Typography variant="h4" align="center" gutterBottom>Expected Rate</Typography>
+              <Typography variant="h2" align="center" gutterBottom><CountUp end={summary.expected_royalties / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
             </CardContent>
           </Card>
         </Stack>
+      </Grid>
+      <Grid item lg={4} md={6} xs={12}>
+        <PaidUnpaidChart all={true} />
       </Grid>
       <Grid item lg={4} md={12} xs={12}>
         <Card sx={{ height: 390, overflow: 'hidden' }}>
@@ -154,6 +148,29 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
           
         </Card>
       </Grid>
+      <Grid item lg={6} xs={12}>
+        <Card>
+          <CardContent>
+            <Typography variant="h4" align="center" gutterBottom>CPL Repaid</Typography>
+            <Typography variant="h2" align="center" gutterBottom color="secondary">◎<CountUp duration={4} end={summary.repaid ? summary.repaid / LAMPORTS_PER_SOL : 0} useEasing={true} decimals={2} separator="," /></Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item lg={6} xs={12}>
+        <Card>
+          <CardContent>
+            <Typography variant="h4" align="center" gutterBottom>{ showTotalPaid ? 'Total Royalties Paid' : 'NFTs Monitored' }</Typography>
+            <Typography variant="h2" align="center" gutterBottom>
+              {
+                showTotalPaid
+                  ? <>◎<CountUp end={summary.paid ? summary.paid / LAMPORTS_PER_SOL : 0} duration={4} decimals={2} separator="," useEasing={true} /></>
+                  : <CountUp end={collectionInfo.num_mints || 0} duration={4} separator="," useEasing={true} />
+                }
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      
     </Grid>
   )
 }

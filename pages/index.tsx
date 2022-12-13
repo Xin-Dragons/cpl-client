@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { PaidUnpaidChart } from '../components/PaidUnpaidChart';
 import { Dashboard } from '../components'
 import { Card, CardContent, CardHeader, Pagination, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
@@ -47,7 +48,7 @@ export default function Home() {
                     <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Total Sales</TableCell>
                     <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalties Evaded</TableCell>
                     <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalties Paid</TableCell>
-                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Royalty Payment Rate</TableCell>
+                    <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>Effective Rate</TableCell>
                   </TableRow>
                 </TableHead>
                 {
@@ -62,7 +63,6 @@ export default function Home() {
                     : <TableBody>
                     {
                       collections.map(c => {
-                        console.log(c)
                         return (
                           <TableRow onClick={goto(`/collections/${c.id}`)} key={c.id} sx={{
                             cursor: 'pointer',
@@ -78,7 +78,7 @@ export default function Home() {
                             <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{numberWithCommas(c.total_sales?.toFixed(2))}</TableCell>
                             <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{lamportsToSol(c.total_debt)}</TableCell>
                             <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>◎{lamportsToSol(c.total_paid)}</TableCell>
-                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>{(c.total_paid / c.expected_royalties * 100).toFixed(2)}%</TableCell>
+                            <TableCell sx={{fontSize: { xs: '0.8em', sm: '1em', md: '1.2em' }}}>{(c.total_paid / LAMPORTS_PER_SOL / c.total_sales * 100).toFixed(2)}%</TableCell>
                           </TableRow>
                         )
                       })

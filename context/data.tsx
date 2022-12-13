@@ -55,9 +55,7 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
 
   async function getAllCollections() {
     setAllCollectionsLoading(true)
-    console.log('getting')
     const { data } = await axios.get('/api/get-all-collections')
-    console.log('got', data)
     setAllCollections(data)
     setAllCollectionsLoading(false);
   }
