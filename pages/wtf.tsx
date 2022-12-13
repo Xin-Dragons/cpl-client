@@ -7,7 +7,7 @@ export default function WTF() {
   return <Layout page="wtf">
     <MainTitle>WTF?</MainTitle>
     <Grid container>
-      <Grid item xs={8}>
+      <Grid item sm={12} md={8}>
         <Box mt={2}>
           <Card>
             <CardContent>

@@ -24,6 +24,9 @@ import { subscribe, unsubscribe } from "../helpers";
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
+    background: {
+      paper: 'none'
+    },
     primary: {
       main: 'rgb(228, 37, 117)'
     },

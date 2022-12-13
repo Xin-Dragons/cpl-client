@@ -1,5 +1,23 @@
-import { Grid, Card, CardContent, Typography, Box, FormControl, InputLabel, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Button, TableFooter, Pagination } from "@mui/material";
-import { LAMPORTS_PER_SOL, Transaction, PublicKey } from '@solana/web3.js';
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Table,
+  TableHead,
+  TableContainer,
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+  Pagination
+} from "@mui/material";
+import { Transaction, PublicKey } from '@solana/web3.js';
 import { lamportsToSol, truncate } from "../../helpers";
 import { FC, useEffect, useState } from "react";
 import { useData } from "../../context";
@@ -159,43 +177,45 @@ export const SalesTable: FC = () => {
                 </Select>
               </FormControl>
             </Box>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Last sale</TableCell>
-                  <TableCell>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Last sale</TableCell>
+                    <TableCell>
+                      {
+                        sort === 'royalties_paid' ? 'Royalties paid' : 'Outstanding debt'
+                      }
+                    </TableCell>
+                    <TableCell>Mint address</TableCell>
+                    <TableCell>Holder</TableCell>
+                    <TableCell>Purchased by</TableCell>
                     {
-                      sort === 'royalties_paid' ? 'Royalties paid' : 'Outstanding debt'
+                      sort !== 'royalties_paid' && <TableCell></TableCell>
                     }
-                  </TableCell>
-                  <TableCell>Mint address</TableCell>
-                  <TableCell>Holder</TableCell>
-                  <TableCell>Purchased by</TableCell>
-                  {
-                    sort !== 'royalties_paid' && <TableCell></TableCell>
-                  }
-                </TableRow>
-              </TableHead>
-              {
-                mintsLoading
-                  ? <TableBody>
-                    <TableRow>
-                      <TableCell colSpan={sort === 'royalties_paid' ? 8 : 9}>
-                        <Box mt={2} mb={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Spinner />
-                        </Box>
-                      </TableCell>
-                    </TableRow>
+                  </TableRow>
+                </TableHead>
+                {
+                  mintsLoading
+                    ? <TableBody>
+                      <TableRow>
+                        <TableCell colSpan={sort === 'royalties_paid' ? 8 : 9}>
+                          <Box mt={2} mb={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Spinner />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                    :<TableBody>
+                    {
+                      mints.map(mint => <MintRow key={mint.mint} mint={mint} sort={sort} />)
+                    }
                   </TableBody>
-                  :<TableBody>
-                  {
-                    mints.map(mint => <MintRow key={mint.mint} mint={mint} sort={sort} />)
-                  }
-                </TableBody>
-              }
-            </Table>
+                }
+              </Table>
+            </TableContainer>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }} mt={2}>
               <Pagination count={Math.floor(collectionInfo.num_mints / limit)} page={page} onChange={handlePageChange} />
             </Box>

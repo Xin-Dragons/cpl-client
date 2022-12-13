@@ -130,7 +130,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
           <Card>
             <CardContent>
               <Typography variant="h4" align="center" gutterBottom>Expected Rate</Typography>
-              <Typography variant="h2" align="center" gutterBottom><CountUp end={summary.expected_royalties / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
+              <Typography variant="h2" align="center" gutterBottom color="primary"><CountUp end={summary.expected_royalties / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
             </CardContent>
           </Card>
         </Stack>
@@ -160,7 +160,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
         <Card>
           <CardContent>
             <Typography variant="h4" align="center" gutterBottom>{ showTotalPaid ? 'Total Royalties Paid' : 'NFTs Monitored' }</Typography>
-            <Typography variant="h2" align="center" gutterBottom>
+            <Typography variant="h2" align="center" gutterBottom color="primary">
               {
                 showTotalPaid
                   ? <>◎<CountUp end={summary.paid ? summary.paid / LAMPORTS_PER_SOL : 0} duration={4} decimals={2} separator="," useEasing={true} /></>

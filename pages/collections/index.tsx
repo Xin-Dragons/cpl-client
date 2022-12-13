@@ -42,10 +42,10 @@ export default function Collections() {
         <Card>
           <CardContent>
             <Grid container spacing={2}>
-              <Grid item xs={8}>
+              <Grid item xs={12} sm={8}>
                 <TextField fullWidth id="outlined-basic" label="Search" variant="outlined" value={search} onChange={handleChange} />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={4}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button variant="contained" size="large" onClick={() => toast('Coming soon...\n\nContact gentlemonke@xindragons.io to be added')}>Add collection</Button>
                 </Box>
@@ -59,7 +59,7 @@ export default function Collections() {
                     ? filtered.map(c => {
                       return (
                         
-                        <Grid item xs={3} key={c.id}>
+                        <Grid item lg={3} md={4} sm={6} xs={12} key={c.id}>
                           <Link href={`/collections/${c.id}`}>
                             <a>
                             <Card>

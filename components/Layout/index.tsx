@@ -4,6 +4,85 @@ import { Toaster } from "react-hot-toast";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import styles from "./style.module.scss";
 import { Box, Container } from "@mui/material";
+import { Burger } from "../Burger";
+import { useState } from "react";
+import classNames from "classnames";
+import { style } from "@mui/system";
+
+function Navigation({ page }) {
+  return (
+    <nav>
+      <ul className={styles['nav-wrapper']}>
+        <li className={classNames({ [styles.menuselected]: page === 'dashboard'} )}>
+          <Link href="/"><a>DASHBOARD</a></Link>
+        </li>
+        <li className={classNames({ [styles.menuselected]: page === 'collections'} )}>
+          <Link href="/collections"><a>COLLECTIONS</a></Link>
+        </li>
+        <li className={classNames({ [styles.menuselected]: page === 'wallet'} )}>
+          <Link href="/wallet"><a>WALLET</a></Link>
+        </li>
+        <li className={classNames({ [styles.menuselected]: page === 'wtf'} )}>
+          <Link href="/wtf"><a>WTF</a></Link>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
+function DesktopNav({ page }) {
+  return (
+    <div className={styles['header-wrapper']}>
+      <div className={styles.logo}>
+        <Link href="/">
+          <a>CPL</a>
+        </Link>
+      </div>
+      <Navigation page={page} />
+      <WalletMultiButton />
+    </div>
+  )
+}
+
+function Header({ page }) {
+  return (
+    <header className={styles.header}>
+      <div className={styles.mobile}>
+        <MobileNav page={page} />
+      </div>
+      <div className={styles.desktop}>
+        <DesktopNav page={page} />
+      </div>
+    </header>
+  )
+}
+
+function MobileNav({ page }) {
+  const [open, setOpen] = useState(false);
+
+  function onChange(e) {
+    setOpen(!open)
+  }
+
+  return (
+    <div>
+    <div className={styles['header-wrapper']}>
+      <div className={styles.logo}>
+        <Link href="/">
+          <a>CPL</a>
+        </Link>
+      </div>
+      <Burger open={open} onChange={onChange} />
+    </div>
+    {
+      open && <>
+        <div className={styles.wallet}><WalletMultiButton /></div>
+        <Navigation page={page} />
+      </>
+    }
+    </div>
+  )
+}
 
 export function Layout({ children, page }) {
   return (
@@ -26,34 +105,7 @@ export function Layout({ children, page }) {
 
       <Toaster style={{ wordWrap: 'break-word' }}/>
 
-      <header className={styles.header}>
-        <div className={styles.hgrid}>
-          <div className={styles.headerblockmenu}>
-            <div className={styles.logo}>
-              <Link href="/">
-                <a>CPL</a>
-              </Link>
-            </div>
-            <nav>
-              <ul>
-                <li className={page === 'dashboard' && styles.menuselected}>
-                  <Link href="/"><a>DASHBOARD</a></Link>
-                </li>
-                <li className={page === 'collections' && styles.menuselected}>
-                  <Link href="/collections"><a>COLLECTIONS</a></Link>
-                </li>
-                <li className={page === 'wallet' && styles.menuselected}>
-                  <Link href="/wallet"><a>WALLET</a></Link>
-                </li>
-                <li className={page === 'wtf' && styles.menuselected}>
-                  <Link href="/wtf"><a>WTF</a></Link>
-                </li>
-              </ul>
-            </nav>
-            <WalletMultiButton />
-          </div>
-        </div>
-      </header>
+      <Header page={page} />
       <main className={styles.main}>
         <Container>
           <Box mt={10}>{children}</Box>
