@@ -14,6 +14,8 @@ import { Box } from "@mui/system";
 import Spinner from "../Spinner";
 import { metaplex } from '../../helpers'
 import { useEffect, useState } from "react";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Info } from "../Info";
 
 function RecentSale({ item }) {
   const [image, setImage] = useState(item.image);
@@ -78,7 +80,7 @@ function Leaderboard() {
   const { leaderboard, leaderboardLoading } = useData();
   return (
     <CardContent>
-      <Typography variant="h4" align="center" gutterBottom>Leaderboard</Typography>
+      <Typography variant="h4" align="center" gutterBottom>Leaderboard <Info tooltip="Wallets ranked by total royalties paid" /></Typography>
       <Box sx={{ overflow: 'auto', height: '300px' }}>
         {
           leaderboardLoading
@@ -123,13 +125,13 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
         <Stack spacing={2} sx={{ height: '100%' }}>
           <Card>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>Effective Rate</Typography>
+              <Typography variant="h4" align="center" gutterBottom>Effective Rate <Info tooltip={<span>Actual royalties rate received.<br />total_royalties / total_sales</span>} /></Typography>
               <Typography variant="h2" align="center" gutterBottom color="primary"><CountUp end={summary.paid / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
             </CardContent>
           </Card>
           <Card>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>Expected Rate</Typography>
+              <Typography variant="h4" align="center" gutterBottom>Expected Rate <Info tooltip="Creators' royalty rate as per on-chain metadata" /></Typography>
               <Typography variant="h2" align="center" gutterBottom color="primary"><CountUp end={summary.expected_royalties / LAMPORTS_PER_SOL / summary.total_sales * 100} duration={4} useEasing={true} decimals={2} />%</Typography>
             </CardContent>
           </Card>
@@ -151,7 +153,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
       <Grid item lg={6} xs={12}>
         <Card>
           <CardContent>
-            <Typography variant="h4" align="center" gutterBottom>CPL Repaid</Typography>
+            <Typography variant="h4" align="center" gutterBottom>CPL Repaid <Info tooltip="Amount repaid in Sol using the CPL application" /></Typography>
             <Typography variant="h2" align="center" gutterBottom color="secondary">◎<CountUp duration={4} end={summary.repaid ? summary.repaid / LAMPORTS_PER_SOL : 0} useEasing={true} decimals={2} separator="," /></Typography>
           </CardContent>
         </Card>
@@ -159,7 +161,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
       <Grid item lg={6} xs={12}>
         <Card>
           <CardContent>
-            <Typography variant="h4" align="center" gutterBottom>{ showTotalPaid ? 'Total Royalties Paid' : 'NFTs Monitored' }</Typography>
+            <Typography variant="h4" align="center" gutterBottom>{ showTotalPaid ? 'Total Royalties Paid' : 'NFTs Monitored' } <Info tooltip={showTotalPaid ? 'Total amount of royalties paid' : 'Number of NFTs monitored by the CPL application'} /></Typography>
             <Typography variant="h2" align="center" gutterBottom color="primary">
               {
                 showTotalPaid

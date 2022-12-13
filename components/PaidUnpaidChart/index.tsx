@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Cell, Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { useData } from "../../context";
 import Spinner from "../Spinner";
-import { lamportsToSol } from "../../helpers";
+import { Info } from "../Info";
 
 const COLORS = ['#00C49F', '#ce266c', '#FFBB28', '#FF8042'];
 
@@ -45,7 +45,7 @@ export function PaidUnpaidChart({ collection, all }: { collection?: string, all?
   return (
     <Card sx={{ height: '100%' }}>
       <CardContent sx={{ height: '100%' }}>
-        <Typography variant="h4" align="center">Percent Paid</Typography>
+        <Typography variant="h4" align="center">Percent Paid <Info tooltip={<span>Percent of royalties paid vs expected<br />actual_royalties / expected_royalties</span>} /></Typography>
         {
           chartData.length
             ? (
