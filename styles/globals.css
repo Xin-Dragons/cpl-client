@@ -26,6 +26,10 @@ html {
   scroll-behavior: smooth;
 }
 
+.wallet-adapter-modal {
+  z-index: 10000000;
+}
+
 .wallet-adapter-button-trigger {
   color: #fff;
   background: rgb(206, 38, 108);

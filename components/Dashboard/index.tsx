@@ -8,7 +8,6 @@ import CountUp from 'react-countup';
 
 import styles from './style.module.scss'
 import Link from "next/link";
-import { lamports } from "@metaplex-foundation/js";
 import { MagicEdenImage } from "../MagicEdenImage";
 import { Box } from "@mui/system";
 import Spinner from "../Spinner";
