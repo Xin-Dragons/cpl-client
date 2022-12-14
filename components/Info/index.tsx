@@ -4,7 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 export const Info: FC<{ tooltip: string }> = ({ tooltip }) => {
   return (
-    <Tooltip title={tooltip} placement="top" arrow  sx={{ cursor: 'help' }}>
+    <Tooltip title={tooltip} placement="top" arrow  sx={{ cursor: 'help' }} enterTouchDelay={0}>
       <InfoOutlinedIcon />
     </Tooltip>
   )
