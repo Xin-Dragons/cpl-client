@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { uniqBy } from "lodash";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_DB_URL as string,
@@ -42,4 +43,24 @@ export async function getCollection({ id, collection, firstVerifiedCreator }: { 
   }
 
   return data;
+}
+
+export async function getCollectionsForWallet({ publicKey }: { publicKey: string }) {
+  const { data, error } = await supabase
+    .from('sales')
+    .select(`
+      nfts(
+        collection(
+          *
+        )
+      )
+    `)
+    .eq('buyer', publicKey)
+
+  if (error) {
+    console.log(error)
+    throw new Error('Error looking up sales for wallet');
+  }
+
+  return uniqBy(data.map(item => item.nfts.collection), item => item.id)
 }

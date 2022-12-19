@@ -1,14 +1,15 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { collection, limit, page, orderBy, publicKey } = req.query
+  const { collection, limit, page, orderBy, publicKey, collectionFilter } = req.query
   try {
     const options = {
       params: {
         limit,
         page,
         orderBy,
-        publicKey
+        publicKey,
+        collectionFilter
       }
     }
 

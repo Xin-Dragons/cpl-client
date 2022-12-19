@@ -1,6 +1,7 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react'
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { getCollectionsForWallet } from '../helpers/db';
 
 const initial = {
   summary: [],
@@ -35,6 +36,8 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
   const [leaderboard, setLeaderboard] = useState<[]>([]);
   const [collections, setCollections] = useState<[]>([]);
   const [publicKey, setPublicKey] = useState<string | null>(initialPublicKey);
+  const [collectionFilter, setCollectionFilter] = useState('all');
+  const [collectionsForWallet, setCollectionsForWallet] = useState([])
   const [mints, setMints] = useState<[]>([])
   const [collectionInfo, setCollectionInfo] = useState<{}>([])
   const [limit, setLimit] = useState(20);
@@ -72,7 +75,7 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
   useEffect(() => {
     getMints()
     getCollections()
-  }, [sort, limit, page, publicKey])
+  }, [sort, limit, page, publicKey, collectionFilter])
 
   async function getCollectionInfo() {
     const options = {
@@ -102,9 +105,19 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     setRecentSalesLoading(false)
   }
 
+  async function updateCollectionsForWallet() {
+    if (publicKey) {
+      const collections = await getCollectionsForWallet({ publicKey })
+      setCollectionsForWallet(collections)
+    } else {
+      setCollectionsForWallet([])
+    }
+  }
+
   useEffect(() => {
     getRecentSales()
     getSummary()
+    updateCollectionsForWallet()
   }, [publicKey])
 
   async function getMints() {
@@ -120,7 +133,8 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
         limit,
         page,
         orderBy: sort,
-        publicKey
+        publicKey,
+        collectionFilter: collectionFilter === 'all' ? null : collectionFilter
       }
     }
     setMints([])
@@ -188,13 +202,17 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
       recentSales,
       page,
       limit,
+      fetchData,
       setPage,
       mintsLoading,
       collectionsLoading,
       allCollections,
       allCollectionsLoading,
       leaderboardLoading,
-      recentSalesLoading
+      recentSalesLoading,
+      collectionFilter,
+      setCollectionFilter,
+      collectionsForWallet
       }}>
       { children }
     </DataContext.Provider>

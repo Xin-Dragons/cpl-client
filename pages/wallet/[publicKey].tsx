@@ -1,15 +1,15 @@
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Dashboard, Layout } from "../../components"
 import { MainTitle } from "../../components/MainTitle";
 import { SalesTable } from "../../components/SalesTable/indes";
 import { useData } from "../../context";
 import { truncate } from "../../helpers";
+import { getCollections } from "../../helpers/db";
 
 const Wallet: FC = () => {
   const router = useRouter();
-
   const { publicKey } = router.query;
 
   function onPKClick() {

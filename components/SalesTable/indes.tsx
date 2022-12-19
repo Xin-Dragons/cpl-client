@@ -29,6 +29,7 @@ import axios from "axios";
 import { useWallet } from "@solana/wallet-adapter-react";
 import base58 from "bs58";
 import { metaplex } from '../../helpers';
+import { Stack } from "@mui/system";
 
 interface PayButtonProps {
   mint: string
@@ -146,14 +147,31 @@ function MintRow({ mint, sort }) {
 }
 
 export const SalesTable: FC = () => {
-  const { mints, sort, setSort, page, setPage, mintsLoading, limit, collectionInfo } = useData();
+  const {
+    mints,
+    sort,
+    setSort,
+    page,
+    setPage,
+    mintsLoading,
+    limit,
+    collectionInfo,
+    collectionFilter,
+    setCollectionFilter,
+    collectionsForWallet
+  } = useData();
   
   function handleChange(e) {
     setSort(e.target.value);
   }
 
   function handlePageChange(e, page: number) {
+    console.log(e, page)
     setPage(page)
+  }
+
+  function handleFilterByCollectionChange(e) {
+    setCollectionFilter(e.target.value)
   }
 
   return (
@@ -163,19 +181,61 @@ export const SalesTable: FC = () => {
           <CardContent>
             <Typography variant="h4">Mints</Typography>
             <Box display="flex" alignItems="flex-end" justifyContent="flex-end">
-              <FormControl>
-                <InputLabel id="sort-by-label">Sort by</InputLabel>
-                <Select
-                  labelId="sort-by-label"
-                  id="sort-by"
-                  value={sort}
-                  label="Sort by"
-                  onChange={handleChange}
-                >
-                  <MenuItem value="royalties_paid">Highest royalty payments</MenuItem>
-                  <MenuItem value="debt_lamports">Outstanding debt</MenuItem>
-                </Select>
-              </FormControl>
+              <Stack direction="row" spacing={2}>
+                {
+                  collectionsForWallet && (
+                    <FormControl>
+                      <InputLabel id="filter-by-collection-label">Filter by collection</InputLabel>
+                      <Select
+                        labelId="filter-by-collection-label"
+                        id="filter-by"
+                        value={collectionFilter}
+                        label="Filter by collection"
+                        onChange={handleFilterByCollectionChange}
+                        inputProps={{
+                          MenuProps: {
+                            MenuListProps: {
+                              sx: {
+                                backgroundColor: '#14141f'
+                              }
+                            }
+                          }
+                        }}
+                  
+                      >
+                        <MenuItem value="all">All</MenuItem>
+                        {
+                          collectionsForWallet.map(c => (
+                            <MenuItem value={c.id}>{ c.name }</MenuItem>
+                          ))
+                        }
+                      </Select>
+                    </FormControl>
+                  )
+                }
+                <FormControl>
+                  <InputLabel id="sort-by-label">Sort by</InputLabel>
+                  <Select
+                    labelId="sort-by-label"
+                    id="sort-by"
+                    value={sort}
+                    label="Sort by"
+                    onChange={handleChange}
+                    inputProps={{
+                      MenuProps: {
+                        MenuListProps: {
+                          sx: {
+                            backgroundColor: '#14141f'
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    <MenuItem value="royalties_paid">Highest royalty payments</MenuItem>
+                    <MenuItem value="debt_lamports">Outstanding debt</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
             </Box>
             <TableContainer>
               <Table>
