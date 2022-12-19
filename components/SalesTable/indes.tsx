@@ -206,7 +206,7 @@ export const SalesTable: FC = () => {
                         <MenuItem value="all">All</MenuItem>
                         {
                           collectionsForWallet.map(c => (
-                            <MenuItem value={c.id}>{ c.name }</MenuItem>
+                            <MenuItem key={c.id} value={c.id}>{ c.name }</MenuItem>
                           ))
                         }
                       </Select>
