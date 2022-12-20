@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import styles from "./style.module.scss";
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import { Burger } from "../Burger";
 import { useState } from "react";
 import classNames from "classnames";
@@ -107,8 +107,26 @@ export function Layout({ children, page }) {
 
       <Header page={page} />
       <main className={styles.main}>
+        <Box borderBottom="1px solid #363650" width="100%">
+          <Container>
+            <Stack mt={7} direction={{ lg: 'row', sm: 'column' }} justifyContent="space-between" alignItems="center" width="100%" pb={1} pt={1} spacing={1}>
+              <Typography fontWeight="bold" letterSpacing={0} fontSize={14}>Return of the Royalties</Typography>
+              <Stack direction="row" spacing={0.5}>
+                <Typography fontWeight="bold" textTransform="uppercase" fontSize={14} letterSpacing={0}>Stakooor</Typography>
+                <Typography color="primary" fontWeight="bold" fontSize={14}>2.0</Typography>
+              </Stack>
+              <Stack direction={{ lg: 'row', sm: 'column' }} spacing={1}>
+                <Typography textTransform="uppercase" fontSize={11} color="#E297B6" fontWeight="bold" textAlign="center">Royalty gated staking</Typography>
+                <Typography textTransform="uppercase" fontSize={11} color="#E297B6" fontWeight="bold" textAlign="center">See and pay royalty debts instantly</Typography>
+                <Typography textTransform="uppercase" fontSize={11} color="#E297B6" fontWeight="bold" textAlign="center">Emissions boost for paid royalties</Typography>
+              </Stack>
+              <Button variant="outlined" size="small" href="/stakooor.pdf">Learn more</Button>
+              <Button variant="contained" size="small" href="https://www.xlabs.so/apply" target="_blank">Apply now</Button>
+            </Stack>
+          </Container>
+        </Box>
         <Container>
-          <Box mt={10}>{children}</Box>
+          <Box mt={2}>{children}</Box>
         </Container>
       </main>
       <div className={styles.btt}>
