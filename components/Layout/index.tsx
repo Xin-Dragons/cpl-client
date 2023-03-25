@@ -120,8 +120,8 @@ export function Layout({ children, page }) {
                 <Typography textTransform="uppercase" fontSize={11} color="#E297B6" fontWeight="bold" textAlign="center">See and pay royalty debts instantly</Typography>
                 <Typography textTransform="uppercase" fontSize={11} color="#E297B6" fontWeight="bold" textAlign="center">Emissions boost for paid royalties</Typography>
               </Stack>
-              <Button variant="outlined" size="small" href="/stakooor.pdf">Learn more</Button>
-              <Button variant="contained" size="small" href="https://www.xlabs.so/apply" target="_blank">Apply now</Button>
+              <Button variant="outlined" size="small" href="/stakooor.pdf" sx={{ lineHeight: '23px', fontWeight: 700, fontFamily: 'Raleway' }}>Learn more</Button>
+              <Button variant="contained" size="small" href="https://www.xlabs.so/apply" target="_blank" sx={{ lineHeight: '23px', fontWeight: 700, fontFamily: 'Raleway' }}>Apply now</Button>
             </Stack>
           </Container>
         </Box>

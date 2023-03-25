@@ -2,6 +2,9 @@ import axios from "axios";
 import { pick } from "lodash";
 
 export default async function handler(req, res) {
+  const headers = {
+    Authorization: `Bearer ${process.env.API_SECRET_KEY}`
+  };
   const params = pick(req.body, [
     'signedMessage',
     'usingLedger',
@@ -16,7 +19,7 @@ export default async function handler(req, res) {
     'publicKey'
   ])
   try {
-    const { data } = await axios.post(`${process.env.API_URL}/collections`, params);
+    const { data } = await axios.post(`${process.env.API_URL}/collections`, params, { headers });
 
     res.status(200).json(data);
   } catch (err) {

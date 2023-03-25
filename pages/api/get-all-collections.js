@@ -2,7 +2,10 @@ import axios from "axios";
 
 export default async function handler(req, res) {
   try {
-    const { data } = await axios.get(`${process.env.API_URL}/all-collections`);
+    const headers = {
+      Authorization: `Bearer ${process.env.API_SECRET_KEY}`
+    };
+    const { data } = await axios.get(`${process.env.API_URL}/all-collections`, { headers });
 
     res.status(200).json(data);
   } catch (err) {

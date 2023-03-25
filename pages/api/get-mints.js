@@ -4,6 +4,9 @@ export default async function handler(req, res) {
   const { collection, limit, page, orderBy, publicKey, collectionFilter } = req.query
   try {
     const options = {
+      headers: {
+        Authorization: `Bearer ${process.env.API_SECRET_KEY}`
+      },
       params: {
         limit,
         page,

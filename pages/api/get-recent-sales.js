@@ -4,6 +4,9 @@ export default async function handler(req, res) {
   const { publicKey, limit, offset } = req.query
   try {
     const options = {
+      headers: {
+        Authorization: `Bearer ${process.env.API_SECRET_KEY}`
+      },
       params: {
         publicKey,
         limit,
