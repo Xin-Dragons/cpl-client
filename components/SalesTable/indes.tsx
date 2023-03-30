@@ -57,7 +57,7 @@ const PayButton: FC<PayButtonProps> = ({ mint, onDebtRepaid }) => {
       const { data } = await axios.get('/api/get-repayment-transaction', { params })
       const txn = Transaction.from(base58.decode(data));
       const signed = await wallet?.signTransaction?.(txn);
-      if (!txn.verifySignatures()) {
+      if (!signed?.verifySignatures()) {
         throw new Error('Error signing transaction')
       }
 
