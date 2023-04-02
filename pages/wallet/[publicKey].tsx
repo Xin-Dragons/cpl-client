@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Dashboard, Layout } from "../../components"
 import { MainTitle } from "../../components/MainTitle";
-import { SalesTable } from "../../components/SalesTable/indes";
+import { SalesTable } from "../../components/SalesTable";
 import { useData } from "../../context";
 import { truncate } from "../../helpers";
 import { getCollections } from "../../helpers/db";

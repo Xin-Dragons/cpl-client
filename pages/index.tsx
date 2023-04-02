@@ -16,6 +16,7 @@ import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
 import { MainTitle } from '../components/MainTitle';
 import { MagicEdenImage } from '../components/MagicEdenImage';
+import { SalesOverTime } from '../components/SalesOverTime';
 
 export default function Home() {
   const { collections, page, setPage, collectionsLoading, limit, allCollections } = useData()
@@ -33,8 +34,7 @@ export default function Home() {
       
       <MainTitle>CPL</MainTitle>
       <Typography gutterBottom variant="h5" sx={{ fontSize: { sm: '3vw', md: '30px' } }}>A smart tool for monitoring NFT royalty payments and evasion on the Solana blockchain</Typography>
-
-      <Dashboard />
+      <Dashboard showWeeklyLeaders />
       <Grid container spacing={2} mt={1}>
         <Grid item xs={12}>
           <Card>

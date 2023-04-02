@@ -335,6 +335,10 @@ export default function Collections() {
     const name = c.name || c.id;
     return !search || name.toLowerCase().includes(search.toLowerCase())
   });
+
+  function showWarning() {
+    window.alert('Currently collections can only be added by reaching out to the XLabs team - send an email to gentlemonke@xlabs.so <3')
+  }
   
   return (
     <Layout page="collections">
@@ -357,7 +361,7 @@ export default function Collections() {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button variant="contained" size="large" onClick={toggleModalOpen}>Add collection</Button>
+                  <Button variant="contained" size="large" onClick={showWarning}>Add collection</Button>
                 </Box>
               </Grid>
             </Grid>

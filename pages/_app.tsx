@@ -29,7 +29,7 @@ const darkTheme = createTheme({
       default: '#14141f'
     },
     primary: {
-      main: 'rgb(228, 37, 117)'
+      main: '#E42575'
     },
     secondary: {
       main: '#00C49F'

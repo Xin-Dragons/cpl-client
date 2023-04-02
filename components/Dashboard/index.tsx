@@ -15,6 +15,8 @@ import { metaplex } from '../../helpers'
 import { useEffect, useState } from "react";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Info } from "../Info";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function RecentSale({ item }) {
   const [image, setImage] = useState(item.image);
@@ -115,7 +117,65 @@ function Leaderboard() {
   )
 }
 
-export function Dashboard({ showRecentSales, showTotalPaid }) {
+function WeeklyLeaders() {
+  const [leaders, setLeaders] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function getLeaders() {
+    try {
+
+      setLoading(true)
+      const { data } = await axios.get('/api/get-weekly-leaders')
+      setLeaders(data)
+    } catch (err) {
+      console.log(err)
+      toast.error('Unable to get weekly leaderboard')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  console.log({ leaders })
+
+  useEffect(() => {
+    getLeaders()
+  }, [])
+
+  return (
+    <CardContent>
+      <Typography variant="h4" align="center" gutterBottom>Weekly leaders</Typography>
+      <Box sx={{ overflow: 'auto', height: '300px' }}>
+        {
+          loading
+            ? <Box sx={{ display: 'flex', justifyContent: 'center', alignItems:'center', height: '100%'}}><Spinner /></Box>
+            : <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Collection</TableCell>
+                <TableCell>Royalties paid</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {
+                leaders.map(item => {
+                  return (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <Link href={`/collections/${item.id}`}><a className={styles.link}>{item.name}</a></Link></TableCell>
+                      <TableCell>◎ {lamportsToSol(item.actual_amount)}</TableCell>
+                    </TableRow>
+                  )
+                })
+              }
+            </TableBody>
+          </Table>
+        }
+      </Box>
+    </CardContent>
+  )
+}
+
+export function Dashboard({ showRecentSales, showTotalPaid, showWeeklyLeaders }) {
   const { summary, collectionInfo } = useData();
 
   return (
@@ -144,7 +204,7 @@ export function Dashboard({ showRecentSales, showTotalPaid }) {
           {
             showRecentSales
               ? <RecentSales />
-              : <Leaderboard />
+              : showWeeklyLeaders ? <WeeklyLeaders /> : <Leaderboard />
           }
           
         </Card>
