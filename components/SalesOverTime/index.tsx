@@ -6,6 +6,7 @@ import { FC, useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, Tooltip, YAxis, Legend } from "recharts";
 import { Stack } from "@mui/system";
 import { capitalize } from "lodash";
+import { useTimeframe } from "../../context/timeframe";
 
 interface SalesOverTimeProps {
   collection: string;
@@ -13,8 +14,7 @@ interface SalesOverTimeProps {
 
 export const SalesOverTime: FC<SalesOverTimeProps> = ({ collection }) => {
   const [sales, setSales] = useState([]);
-  const [days, setDays] = useState(7)
-
+  const { days, setDays } = useTimeframe()
 
   async function getSalesOverTime() {
     const params = {

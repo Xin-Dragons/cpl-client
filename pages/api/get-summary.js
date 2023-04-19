@@ -1,14 +1,15 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  const { collection, publicKey } = req.query
+  const { collection, publicKey, days } = req.query
   try {
     const options = {
       headers: {
         Authorization: `Bearer ${process.env.API_SECRET_KEY}`
       },
       params: {
-        publicKey
+        publicKey,
+        days
       }
     }
     const path = collection ? `collections/${collection}` : ''

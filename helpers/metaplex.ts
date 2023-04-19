@@ -4,7 +4,12 @@ import { getRpcs } from "./db";
 import { sample } from "lodash";
 import base58 from "bs58";
 
-const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL as string, 'confirmed');
+const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL as string, {
+  commitment: "confirmed",
+  httpHeaders: {
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_HELLO_MOON_API_KEY}`
+  }
+});
 export const metaplex = new Metaplex(connection);
 
 const TOKEN_METADATA_PROGRAM = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');

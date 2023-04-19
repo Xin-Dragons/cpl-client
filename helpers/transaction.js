@@ -16,7 +16,12 @@ import nacl from 'tweetnacl';
 import toast from 'react-hot-toast';
 import axios from 'axios'
 
-const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL);
+const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL, {
+  commitment: "confirmed",
+  httpHeaders: {
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_HELLO_MOON_API_KEY}`
+  }
+});
 
 export async function getRestoreTxn({ mint }) {
   return Transaction.from(bs58.decode(mint.restore_txn))

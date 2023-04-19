@@ -20,6 +20,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { DataProvider } from "../context";
 import { subscribe, unsubscribe } from "../helpers";
+import { TimeframeProvider } from "../context/timeframe";
 
 const darkTheme = createTheme({
   palette: {
@@ -52,7 +53,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   }, [])
 
   // You can also provide a custom RPC endpoint
-  const endpoint = process.env.NEXT_PUBLIC_RPC_URL;
+  const endpoint = process.env.NEXT_PUBLIC_RPC_URL as string;
 
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking and lazy loading --
   // Only the wallets you configure here will be compiled into your application, and only the dependencies
@@ -72,13 +73,20 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <ConnectionProvider endpoint={endpoint}>
+      <ConnectionProvider endpoint={endpoint} config={{
+        commitment: "confirmed",
+        httpHeaders: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_HELLO_MOON_API_KEY}`
+        }
+      }}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
-            <DataProvider collection={pageProps.collection} publicKey={pageProps.publicKey}>
-              <CssBaseline />
-              <Component {...pageProps} />
-            </DataProvider>
+            <TimeframeProvider>
+              <DataProvider collection={pageProps.collection} publicKey={pageProps.publicKey}>
+                <CssBaseline />
+                <Component {...pageProps} />
+              </DataProvider>
+            </TimeframeProvider>
           </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>

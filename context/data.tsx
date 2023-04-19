@@ -2,6 +2,7 @@ import { createContext, FC, useContext, useEffect, useState } from 'react'
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { getCollectionsForWallet } from '../helpers/db';
+import { useTimeframe } from './timeframe';
 
 const initial = {
   summary: [],
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export const DataProvider: FC<Props> = ({ children, collection: initialCollection, publicKey: initialPublicKey }) => {
+  const { days, setDays } = useTimeframe()
   const [collection, setCollection] = useState(initialCollection)
   const [allCollections, setAllCollections] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
@@ -118,7 +120,7 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     getRecentSales()
     getSummary()
     updateCollectionsForWallet()
-  }, [publicKey])
+  }, [publicKey, days])
 
   async function getMints() {
     if (!collection && !publicKey) {
@@ -147,11 +149,13 @@ export const DataProvider: FC<Props> = ({ children, collection: initialCollectio
     const options = {
       params: {
         collection,
-        publicKey
+        publicKey,
+        days
       }
     }
     setSummary({})
     const { data } = await axios.get('/api/get-summary', options)
+    console.log(data)
     setSummary(data)
   }
 
